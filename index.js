@@ -77,13 +77,13 @@ app.post("/upload_data", function (req, res, next) {
             // no errors
             let file = req.file;
             let full_path = file.path;
-            console.log("fulpath : ", full_path);
+            //  console.log("fulpath : ",full_path)
             fs_1.default.readFile(full_path, function (err, data) {
                 if (err)
                     throw err;
-                let data_string = data.toString();
-                let data_list = data_string.split(/\s+/g);
-                console.log(data_list);
+                // let data_string = data.toString()
+                //  let data_list = data_string.split(/\s+/g)
+                //  console.log(data_list)
             });
             res.send("filed uploaded");
         }

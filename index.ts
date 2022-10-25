@@ -89,14 +89,15 @@ app.post("/upload_data", function (req :Request ,res :Response, next) {
             // no errors
             let file = (req as MulterRequest).file           
             let full_path = file.path
-            console.log("fulpath : ",full_path)
-            fs.readFile(full_path, function (err, data) {
-                if (err) throw err
-                let data_string = data.toString()
-                let data_list = data_string.split(/\s+/g)
-                console.log(data_list)
+          //  console.log("fulpath : ",full_path)
+          
+        //   fs.readFile(full_path, function (err, data) {
+        //         if (err) throw err
+        //        // let data_string = data.toString()
+        //       //  let data_list = data_string.split(/\s+/g)
+        //       //  console.log(data_list)
            
-            })
+        //     })
 
             res.send("filed uploaded")
         }
