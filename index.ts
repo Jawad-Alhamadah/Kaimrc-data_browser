@@ -134,15 +134,15 @@ function timestamp_file_name(file_name: string = "No_Name", file_extention: stri
     const MINUTES = today.getMinutes()
     const SECONDS = today.getSeconds()
     const timestamp = Date.now()
-    const time_in_hh_mm_ss = `(_H${HOURS}-M${MINUTES}-S${SECONDS}_)`
+    const time_in_hh_mm_ss = `(_${HOURS}H-${MINUTES}M-${SECONDS}S_)`
 
     return `${file_name}-${today_string}_${time_in_hh_mm_ss}_${timestamp}.${file_extention}`
-}
+} 
 
-// process.on('uncaughtException', function (err: Error) {
-//     console.log(CMD.Red(`uncaughtException : ${JSON.stringify(err)}`))
+process.on('uncaughtException', function (err: Error) {
+    console.log(CMD.Red(`uncaughtException : ${JSON.stringify(err)}`))
 
-// })
+})
 
 process.on('unhandledRejection', function (err: Error) {
     console.log(CMD.Red(`unhandledRejection : ${JSON.stringify(err)}`))

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 const express_1 = __importDefault(require("express"));
-let app = express_1.default();
+let app = (0, express_1.default)();
 const { exec } = require("child_process");
 const body_parser_1 = __importDefault(require("body-parser"));
 const fs_1 = __importDefault(require("fs"));
@@ -78,13 +78,12 @@ app.post("/upload_data", function (req, res, next) {
             let file = req.file;
             let full_path = file.path;
             //  console.log("fulpath : ",full_path)
-            fs_1.default.readFile(full_path, function (err, data) {
-                if (err)
-                    throw err;
-                // let data_string = data.toString()
-                //  let data_list = data_string.split(/\s+/g)
-                //  console.log(data_list)
-            });
+            //   fs.readFile(full_path, function (err, data) {
+            //         if (err) throw err
+            //        // let data_string = data.toString()
+            //       //  let data_list = data_string.split(/\s+/g)
+            //       //  console.log(data_list)
+            //     })
             res.send("filed uploaded");
         }
     });
@@ -113,12 +112,12 @@ function timestamp_file_name(file_name = "No_Name", file_extention) {
     const MINUTES = today.getMinutes();
     const SECONDS = today.getSeconds();
     const timestamp = Date.now();
-    const time_in_hh_mm_ss = `(_H${HOURS}-M${MINUTES}-S${SECONDS}_)`;
+    const time_in_hh_mm_ss = `(_${HOURS}H-${MINUTES}M-${SECONDS}S_)`;
     return `${file_name}-${today_string}_${time_in_hh_mm_ss}_${timestamp}.${file_extention}`;
 }
-// process.on('uncaughtException', function (err: Error) {
-//     console.log(CMD.Red(`uncaughtException : ${JSON.stringify(err)}`))
-// })
+process.on('uncaughtException', function (err) {
+    console.log(cmd_colors_1.default.Red(`uncaughtException : ${JSON.stringify(err)}`));
+});
 process.on('unhandledRejection', function (err) {
     console.log(cmd_colors_1.default.Red(`unhandledRejection : ${JSON.stringify(err)}`));
 });
