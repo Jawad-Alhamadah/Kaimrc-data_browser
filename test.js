@@ -23,9 +23,9 @@ let writeStream = fs.createWriteStream(__dirname + "/json_files/myjson.json");
 //let list_of_lists: any = []
 //let list_of_list_of_lists: any = []
 let dot_counter = 0;
-let column_names = "ClinVar_sept_5_22_CLNSIG|ClinVar_sept_5_22_ID|num_samples|alt_allele_count|het_count|alt_allele_ratio|HGVSc|HGVSp|Consequence|POS|ClinVar_sept_5_22_CLNREVSTAT|Feature|ClinVar_sept_5_22".toLowerCase();
+let column_names = "ClinVar_sept_5_22_CLNSIG|ClinVar_sept_5_22_ID|num_samples|alt_allele_count|het_count|alt_allele_ratio|HGVSc|HGVSp|Consequence|POS|ClinVar_sept_5_22_CLNREVSTAT|Feature|ClinVar_sept_5_22|Consequence|rs_dbSNP|Feature|alt_count|HGVSc|5".toLowerCase();
 let column_name_list = column_names.split(/\|/g);
-let clinvar_names_gnomad = 'clinical_significance|clinvar_variation_id|an|ac|ac_hemi|af|hgvsc|hgvsp|major_consequence|pos|review_status|transcript_id|variant_id';
+let clinvar_names_gnomad = 'clinical_significance|clinvar_variation_id|an|ac|ac_hemi|af|hgvsc|hgvsp|major_consequence|pos|review_status|transcript_id|variant_id|consequence|rsids|transcript_id|ac_hom|hgvs|transcript_version';
 let clinvar_names_list_gnomad = clinvar_names_gnomad.split(/\|/g);
 let clinvar_names_list_gnomad_name = [];
 let mapping = {};
@@ -58,7 +58,7 @@ function processLineByLine() {
                 meta: {},
                 gene: {
                     clinvar_variants: [],
-                    variants: {}
+                    variants: []
                 }
             }
         };
@@ -66,7 +66,7 @@ function processLineByLine() {
             for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
                 const line = rl_1_1.value;
                 let row = line.split(/\t+/g);
-                row = row.map(e => e.trim());
+                //row = row.map(e => e.trim())
                 //row.splice(2400, row.length);
                 if (first_line) {
                     row.forEach((col_name, index) => {
@@ -78,12 +78,11 @@ function processLineByLine() {
                         //console.log(element ," : ", indices[index])
                         mapping[element] = indices[index];
                     }
-                    let filtered = row.filter((_, i) => indices.includes(i));
-                    row.forEach(e => {
-                        if (e.includes('ac'))
-                            console.log(e);
-                    });
-                    break;
+                    // let filtered: string[] = row.filter((_: string, i: number) => indices.includes(i))
+                    //   row.forEach((e,i) =>{
+                    //    if(e.toLowerCase().includes('alt')) console.log(e)
+                    // })
+                    // break;
                 }
                 //let filtered: string[] = row.filter((_: string, i: number) => indices.includes(i))
                 //  if(first_line) cols=[...row]
@@ -99,7 +98,7 @@ function processLineByLine() {
                     hgvsp: feature_to_variant_value("hgvsp", row, clinvar_names_list_gnomad_name, mapping),
                     in_gnomad: true,
                     major_consequence: feature_to_variant_value("major_consequence", row, clinvar_names_list_gnomad_name, mapping),
-                    pos: feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping),
+                    pos: Number(feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping)),
                     review_status: feature_to_variant_value("review_status", row, clinvar_names_list_gnomad_name, mapping),
                     transcript_id: feature_to_variant_value("transcript_id", row, clinvar_names_list_gnomad_name, mapping),
                     variant_id: feature_to_variant_value("variant_id", row, clinvar_names_list_gnomad_name, mapping)
@@ -107,14 +106,42 @@ function processLineByLine() {
                 //console.log(feature_to_variant_value("clinical_significance",row,clinvar_names_list_gnomad_name,indices))
                 //feature_to_variant_value("clinical_significance", row, clinvar_names_list_gnomad_name, mapping)
                 // clinvar_variants.push(clinvar_variant)
+                let variant = {
+                    consequence: feature_to_variant_value("consequence", row, clinvar_names_list_gnomad_name, mapping),
+                    flags: [],
+                    hgvs: feature_to_variant_value("hgvs", row, clinvar_names_list_gnomad_name, mapping),
+                    hgvsc: feature_to_variant_value("hgvsc", row, clinvar_names_list_gnomad_name, mapping),
+                    hgvsp: feature_to_variant_value("hgvsp", row, clinvar_names_list_gnomad_name, mapping),
+                    lof: null,
+                    lof_filter: null,
+                    lof_flags: null,
+                    pos: Number(feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping)),
+                    rsids: [],
+                    transcript_id: feature_to_variant_value("transcript_id", row, clinvar_names_list_gnomad_name, mapping),
+                    transcript_version: feature_to_variant_value("transcript_version", row, clinvar_names_list_gnomad_name, mapping),
+                    variant_id: feature_to_variant_value("variant_id", row, clinvar_names_list_gnomad_name, mapping),
+                    exome: null,
+                    genome: {
+                        ac: Number(feature_to_variant_value("ac", row, clinvar_names_list_gnomad_name, mapping)),
+                        ac_hemi: Number(feature_to_variant_value("ac_hemi", row, clinvar_names_list_gnomad_name, mapping)),
+                        ac_hom: Number(feature_to_variant_value("ac_hom", row, clinvar_names_list_gnomad_name, mapping)),
+                        an: Number(feature_to_variant_value("an", row, clinvar_names_list_gnomad_name, mapping)) * 2,
+                        af: Number(feature_to_variant_value("af", row, clinvar_names_list_gnomad_name, mapping)),
+                        filters: [],
+                        populations: null
+                    },
+                    lof_curation: null
+                };
+                variant.rsids.push(feature_to_variant_value("rsids", row, clinvar_names_list_gnomad_name, mapping));
                 json_structure.data.gene.clinvar_variants.push(clinvar_variant);
+                json_structure.data.gene.variants.push(variant);
                 // console.log(json_structure.data.gene.clinvar_variants.length)
                 count++;
-                dot_counter++;
-                if (dot_counter >= 5000) {
-                    process.stdout.write(".");
-                    dot_counter = 0;
-                }
+                // dot_counter++
+                // if (dot_counter >= 5000) {
+                //  process.stdout.write(".")
+                //  dot_counter=0;
+                // }
                 // if (clinvar_variants.length>=500) {
                 //   json_structure.data.gene.clinvar_variants.push(...clinvar_variants)
                 //   clinvar_variants =[]   
@@ -132,7 +159,7 @@ function processLineByLine() {
                             meta: {},
                             gene: {
                                 clinvar_variants: [],
-                                variants: {}
+                                variants: []
                             }
                         }
                     };

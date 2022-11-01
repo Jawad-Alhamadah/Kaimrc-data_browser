@@ -9,10 +9,10 @@ let writeStream = fs.createWriteStream(__dirname + "/json_files/myjson.json")
 //let list_of_list_of_lists: any = []
 let dot_counter=0;
 let column_names =
-  "ClinVar_sept_5_22_CLNSIG|ClinVar_sept_5_22_ID|num_samples|alt_allele_count|het_count|alt_allele_ratio|HGVSc|HGVSp|Consequence|POS|ClinVar_sept_5_22_CLNREVSTAT|Feature|ClinVar_sept_5_22".toLowerCase();
+  "ClinVar_sept_5_22_CLNSIG|ClinVar_sept_5_22_ID|num_samples|alt_allele_count|het_count|alt_allele_ratio|HGVSc|HGVSp|Consequence|POS|ClinVar_sept_5_22_CLNREVSTAT|Feature|ClinVar_sept_5_22|Consequence|rs_dbSNP|Feature|alt_count|HGVSc|5".toLowerCase();
 let column_name_list = column_names.split(/\|/g);
 
-let clinvar_names_gnomad: string = 'clinical_significance|clinvar_variation_id|an|ac|ac_hemi|af|hgvsc|hgvsp|major_consequence|pos|review_status|transcript_id|variant_id'
+let clinvar_names_gnomad: string = 'clinical_significance|clinvar_variation_id|an|ac|ac_hemi|af|hgvsc|hgvsp|major_consequence|pos|review_status|transcript_id|variant_id|consequence|rsids|transcript_id|ac_hom|hgvs|transcript_version'
 let clinvar_names_list_gnomad: string[] = clinvar_names_gnomad.split(/\|/g)
 let clinvar_names_list_gnomad_name: any = []
 let mapping: any = {}
@@ -31,53 +31,52 @@ interface ClinvarVariant {
   hgvsp: string,
   in_gnomad: true,
   major_consequence: string,
-  pos: any,
+  pos: number,
   review_status: string,
   transcript_id: string,
   variant_id: string
 
 }
 interface Variant {
-  "consequence": "5_prime_UTR_variant",
-  "flags": [],
-  "hgvs": "c.-64C>T",
-  "hgvsc": "c.-64C>T",
-  "hgvsp": null,
-  "lof": null,
-  "lof_filter": null,
-  "lof_flags": null,
-  "pos": 55505447,
-  "rsids": ["rs45448095"],
-  "transcript_id": "ENST00000302118",
-  "transcript_version": "5",
-  "variant_id": "1-55505447-C-T",
-  "exome": null,
-  "genome": {
-    "ac": 2846,
-    "ac_hemi": 0,
-    "ac_hom": 144,
-    "an": 31384,
-    "af": 0.09068315065001274,
-    "filters": [],
-    "populations": [
-      { "id": "afr", "ac": 200, "an": 8706, "ac_hemi": 0, "ac_hom": 2 },
-      { "id": "amr", "ac": 71, "an": 848, "ac_hemi": 0, "ac_hom": 1 },
-      { "id": "asj", "ac": 54, "an": 290, "ac_hemi": 0, "ac_hom": 5 },
-      { "id": "eas", "ac": 186, "an": 1560, "ac_hemi": 0, "ac_hom": 5 },
-      { "id": "fin", "ac": 351, "an": 3474, "ac_hemi": 0, "ac_hom": 19 },
-      { "id": "nfe", "ac": 1876, "an": 15420, "ac_hemi": 0, "ac_hom": 107 },
-      { "id": "oth", "ac": 108, "an": 1086, "ac_hemi": 0, "ac_hom": 5 },
-      { "id": "sas", "ac": 0, "an": 0, "ac_hemi": 0, "ac_hom": 0 }
-    ]
-  },
-  "lof_curation": null
+  consequence: string,
+  flags: [],
+  hgvs: string,
+  hgvsc: string,
+  hgvsp: string,
+  lof: string|null,
+  lof_filter: string|null,
+  lof_flags: string|null,
+  pos: number,
+  rsids: string[],
+  transcript_id: string,
+  transcript_version: string,
+  variant_id: string,
+  exome: {
+    ac: number,
+    ac_hemi: number,
+    ac_hom: number,
+    an: number,
+    af: number,
+    filters: any[],
+    populations: null
+  }|null,
+  genome: {
+    ac: number,
+    ac_hemi: number,
+    ac_hom: number,
+    an: number,
+    af: number,
+    filters: any[],
+    populations: null
+  }|null,
+  lof_curation: null
 }
 interface GnomadDataJson { 
   data: { 
     meta: {}, 
     gene: { 
       clinvar_variants: ClinvarVariant[],
-      variants:{} 
+      variants:Variant[]
     
     } 
   } 
@@ -107,7 +106,7 @@ async function processLineByLine() {
       meta: {}, 
       gene: { 
         clinvar_variants:[],
-        variants:{} 
+        variants:[] 
       
       } 
     } 
@@ -115,7 +114,7 @@ async function processLineByLine() {
   for await (const line of rl) {
    
     let row: string[] = line.split(/\t+/g);
-    row = row.map(e => e.trim())
+    //row = row.map(e => e.trim())
     //row.splice(2400, row.length);
     if (first_line) {
       row.forEach((col_name: string, index: number) => {
@@ -129,11 +128,15 @@ async function processLineByLine() {
         mapping[element] = indices[index]
 
       }
-      let filtered: string[] = row.filter((_: string, i: number) => indices.includes(i))
-    row.forEach(e =>{
-      if(e.includes('ac')) console.log(e)
-    })
-      break;
+     // let filtered: string[] = row.filter((_: string, i: number) => indices.includes(i))
+     
+   
+    //   row.forEach((e,i) =>{
+    //    if(e.toLowerCase().includes('alt')) console.log(e)
+ 
+    
+    // })
+    // break;
 
     }
 
@@ -154,7 +157,7 @@ async function processLineByLine() {
       hgvsp: feature_to_variant_value("hgvsp", row, clinvar_names_list_gnomad_name, mapping),
       in_gnomad: true,
       major_consequence: feature_to_variant_value("major_consequence", row, clinvar_names_list_gnomad_name, mapping),
-      pos: feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping),
+      pos: Number(feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping)),
       review_status: feature_to_variant_value("review_status", row, clinvar_names_list_gnomad_name, mapping),
       transcript_id: feature_to_variant_value("transcript_id", row, clinvar_names_list_gnomad_name, mapping),
       variant_id: feature_to_variant_value("variant_id", row, clinvar_names_list_gnomad_name, mapping)
@@ -164,15 +167,44 @@ async function processLineByLine() {
     //feature_to_variant_value("clinical_significance", row, clinvar_names_list_gnomad_name, mapping)
    // clinvar_variants.push(clinvar_variant)
    
+   let variant: Variant = {
+  consequence: feature_to_variant_value("consequence", row, clinvar_names_list_gnomad_name, mapping),
+  flags: [],
+  hgvs: feature_to_variant_value("hgvs", row, clinvar_names_list_gnomad_name, mapping),
+  hgvsc: feature_to_variant_value("hgvsc", row, clinvar_names_list_gnomad_name, mapping),
+  hgvsp: feature_to_variant_value("hgvsp", row, clinvar_names_list_gnomad_name, mapping),
+  lof:null,
+  lof_filter: null,
+  lof_flags: null,
+  pos: Number(feature_to_variant_value("pos", row, clinvar_names_list_gnomad_name, mapping)),
+  rsids: [],
+  transcript_id: feature_to_variant_value("transcript_id", row, clinvar_names_list_gnomad_name, mapping),
+  transcript_version: feature_to_variant_value("transcript_version", row, clinvar_names_list_gnomad_name, mapping),
+  variant_id: feature_to_variant_value("variant_id", row, clinvar_names_list_gnomad_name, mapping),
+  exome: null,
+  genome: {
+    ac: Number(feature_to_variant_value("ac", row, clinvar_names_list_gnomad_name, mapping)),
+    ac_hemi:Number(feature_to_variant_value("ac_hemi", row, clinvar_names_list_gnomad_name, mapping)),
+    ac_hom: Number(feature_to_variant_value("ac_hom", row, clinvar_names_list_gnomad_name, mapping)),
+    an: Number(feature_to_variant_value("an", row, clinvar_names_list_gnomad_name, mapping)) *2,
+    af: Number(feature_to_variant_value("af", row, clinvar_names_list_gnomad_name, mapping)),
+    filters: [],
+    populations: null
+  },
+  lof_curation: null
+  }
+
+  variant.rsids.push(feature_to_variant_value("rsids", row, clinvar_names_list_gnomad_name, mapping))
   json_structure.data.gene.clinvar_variants.push(clinvar_variant)
+  json_structure.data.gene.variants.push(variant)
    // console.log(json_structure.data.gene.clinvar_variants.length)
     count++
-    dot_counter++
-    if (dot_counter >= 5000) {
-     process.stdout.write(".")
-     dot_counter=0;
+   // dot_counter++
+    // if (dot_counter >= 5000) {
+    //  process.stdout.write(".")
+    //  dot_counter=0;
     
-    }
+    // }
     // if (clinvar_variants.length>=500) {
     //   json_structure.data.gene.clinvar_variants.push(...clinvar_variants)
     //   clinvar_variants =[]   
@@ -192,7 +224,7 @@ async function processLineByLine() {
           meta: {}, 
           gene: { 
             clinvar_variants:[],
-            variants:{} 
+            variants:[] 
           
           } 
         } 
