@@ -5,7 +5,8 @@ import express from 'express'
 let app = express();
 const { exec } = require("child_process");
 import bodyParser from 'body-parser'
-import fs from 'fs'
+import fs, { PathLike } from 'fs'
+import{processLineByLine} from "./lib/Typescript_modules/fileiofunctions"
 var path = require('path')
 const multer = require("multer")
 let port: number = 5000;
@@ -15,14 +16,15 @@ interface MulterRequest extends Request {
 }
 
 let storage = multer.diskStorage({
+   
     destination: function (req: Request, file: any, cb: any) {
-
+      
         // Uploads is the Upload_folder_name
-        cb(null, __dirname + "/" + process.env.UPLOAD_FOLDER_NAME_GENOME)
+        cb(null, path.join(__dirname, process.env.UPLOAD_FOLDER_NAME_GENOME))
     },
     filename: function (req: Request, file: any, cb: any) {
-        let full_name = timestamp_file_name(file.originalname.split(".")[0], file.originalname.split(".")[1])
-        cb(null, full_name)
+        let filename = timestampFilename(file.originalname)
+        cb(null, filename)
     }
 })
 
@@ -30,12 +32,12 @@ let upload = multer({
     storage: storage,
     fileFilter: function (req: Request, file: any, cb: any) {
         // Set the filetypes, it is optional
-        let filetypes_regex = /txt|bam|bai|cram/;
-        let extname = filetypes_regex.test(path.extname(file.originalname).toLowerCase());
+        let filetypesRegex = /txt|bam|bai|cram/;
+        let extname = filetypesRegex.test(path.extname(file.originalname).toLowerCase());
         if (extname) {
             return cb(null, true);
         }
-        cb(`Error: File upload only supports the following filetypes - ${filetypes_regex}`);
+        cb(`Error: File upload only supports the following filetypes - ${filetypesRegex}`);
     }
 }).single("myFile")
 
@@ -61,8 +63,8 @@ app.post('/download-file', function (req: Request, res: Response) {
             }
             if (stderr) {
 
-                let { old_file_path, new_file_path } = paths_from_gsutil(command);
-                fs.rename(old_file_path, new_file_path, function (error: any) {
+                let { oldFilePath: oldFilePath, newFilePath: newFilePath } = pathsFromGSutil(command);
+                fs.rename(oldFilePath, newFilePath, function (error: any) {
                     if (error) {
                         console.log(error)
                         throw error
@@ -79,16 +81,34 @@ app.post('/download-file', function (req: Request, res: Response) {
 })
 
 app.post("/upload_data", function (req :Request ,res :Response, next) {
-
+    let oldFile :string
+    let dir = path.join(__dirname,<string>process.env.UPLOAD_FOLDER_NAME_GENOME)
+    fs.readdir(dir,function (err,files){
+        if (err) throw err;
+        oldFile =files [0]   
+    })
     upload(req, res, function (err: any) {
         if (err) {
             //error occured
             res.send(err)
         }
         else {
+            
+            fs.readdir(dir, err => {
+
+                if (err) throw err; 
+                fs.unlink( path.join(dir,oldFile), err =>{ if (err) throw err})
+                     
+            })
             // no errors
-            let file = (req as MulterRequest).file           
-            let full_path = file.path
+            
+            let file = (req as MulterRequest).file  
+            //console.log(file.path)
+
+            fs.writeFile(`${__dirname}/logs/VcfName.txt`, file.path, err =>{
+                if (err) throw err
+            })         
+            let fullPath = file.path
           //  console.log("fulpath : ",full_path)
           
         //   fs.readFile(full_path, function (err, data) {
@@ -111,39 +131,65 @@ app.listen(port, function () {
     console.log(CMD.Magenta("Listening To Port : "), CMD.Orange(`${port}`))
 })
 
-function paths_from_gsutil(command: string) {
-    let file_name_and_extention = command.match(/[^\/]+\s\.$/gm)![0];
-    let old_file_name: string = file_name_and_extention.split(".")[0].trim();
-    let old_file_extention: string = file_name_and_extention.split('.')[1].trim();
-    let folder_name: string = process.env.UPLOAD_FOLDER_NAME_TERA || "uploads";
-    let old_file_path: string = `${__dirname}/${folder_name}/${old_file_name}.${old_file_extention}`;
-    let new_file_path: string = create_file_path(old_file_name, old_file_extention, <string>folder_name);
-    return { old_file_path, new_file_path };
+function pathsFromGSutil(command: string) {
+    
+    let filename  = command.match(/[^\/]+\s\.$/gm)![0]//command.match(/[^\/]+\s\.$/gm)![0];
+   // let name: string = filename.split(".")[0].trim();
+    //let extention: string = filename.split('.')[1].trim();
+    let folderName: string = process.env.UPLOAD_FOLDER_NAME_TERA ||"uploads";
+    let oldFilePath: string = `${__dirname}/${folderName}/${filename}`;
+    let newFilePath: string = `${__dirname}/${folderName}/${timestampFilename(filename)}`//create_file_path(filename, extention, <string>folder_name);
+    return { oldFilePath: oldFilePath, newFilePath: newFilePath };
 }
 
-function create_file_path(file_name: string = "No_Name", file_extention: string, folder_name: string = "uploads") {
-    let new_file_name: string = timestamp_file_name(file_name, file_extention);
-    let new_file_path: string = `${__dirname}/${folder_name}/${new_file_name}`
-    return new_file_path;
-}
+// function create_file_path(file_name: string = "No_Name", file_extention: string, folder_name: string = "uploads") {
+//     let new_file_name: string = timestamp_file_name(file_name, file_extention);
+//     let new_file_path: string = `${__dirname}/${folder_name}/${new_file_name}`
+//     return new_file_path;
+// }
 
-function timestamp_file_name(file_name: string = "No_Name", file_extention: string) {
-    const today: Date = new Date(Date.now())
-    const today_string: string = today.toDateString().replace(/\s/g, "-")
-    const HOURS = today.getHours() >12 ? today.getHours() - 12 :  today.getHours()
-    const MINUTES = today.getMinutes()
-    const SECONDS = today.getSeconds()
-    const timestamp = Date.now()
-    const time_in_hh_mm_ss = `(_${HOURS}H-${MINUTES}M-${SECONDS}S_)`
+function timestampFilename(filename: string ) {
+    
+    let name: string = filename.split(".")[0].trim();
+    let extention: string = filename.split('.')[1].trim();
+    if(!name){name="No_name"}
 
-    return `${file_name}-${today_string}_${time_in_hh_mm_ss}_${timestamp}.${file_extention}`
+    let today: Date = new Date(Date.now())
+    let todayStr: string = today.toDateString().replace(/\s/g, "-")
+    let hours = today.getHours() >12 ? today.getHours() - 12 :  today.getHours()
+    let minutes = today.getMinutes()
+    let seconds = today.getSeconds()
+    let timestamp = Date.now()
+    const TIME_IN_HH_MM_SS = `(_${hours}H-${minutes}M-${seconds}S_)`
+
+    return `${name}-${todayStr}_${TIME_IN_HH_MM_SS}_${timestamp}.${extention}`
 } 
 
+function pathToFilename (path:string){
+    //given a path, this regex returns the file and extention
+    //let filename= path.match(/[^\/]+\s\.$/gm)![0]
+    let filename= path.match(/[^\\]+$/gm)![0]
+    console.log(filename, "path")
+    
+    return filename
+}
+
+
+function pathToNameAndExtention (path:string){
+    //given a path, this regex returns the file and extention
+   // let filename= path.match(/[^\/]+\s\.$/gm)![0]
+    let filename= path.match(/[^\\]+$/gm)![0]
+   
+    let name = filename.split(".")[0]
+    let extention = filename.split(".")[1]
+    return {name,extention}
+}
 process.on('uncaughtException', function (err: Error) {
-    console.log(CMD.Red(`uncaughtException : ${JSON.stringify(err)}`))
+    console.log(CMD.Red(`uncaughtException : ${err}`))
 
 })
 
 process.on('unhandledRejection', function (err: Error) {
-    console.log(CMD.Red(`unhandledRejection : ${JSON.stringify(err)}`))
+    console.log(CMD.Red(`unhandledRejection : ${err}`))
 });
+processLineByLine(__dirname +"/genome_data_files/combined_annotated_VCF_allele_counts-Fri-Nov-04-2022_(_9H-50M-54S_)_1667587854600.txt",__dirname+"/json_files/myjson.json")
