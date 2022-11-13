@@ -6,12 +6,13 @@ let app = express();
 const util = require('util');
 //const { exec } = require("child_process");
 const exec = util.promisify(require('child_process').exec)
-import bodyParser from 'body-parser'
+import bodyParser, { json } from 'body-parser'
 //import fs, { PathLike } from 'fs'
 const { promises: fs } = require("fs");
 let fsRename = util.promisify(fs.rename)
 //let fsReadDir = util.promisify(fs.readdir)
 import { processLineByLine } from "./lib/Typescript_modules/fileiofunctions"
+import axios from 'axios'
 let responseCode = require("./lib/Typescript_modules/responseCodes")
 var path = require('path')
 const multer = require("multer")
@@ -117,24 +118,82 @@ app.post("/upload_data", async function (req: Request, res: Response) {
 })
 
 app.post("/api",async function (req: Request, res: Response){
-    try{
-        let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
-        let filesNames: string[] = await getFilenamesFromDir(dir, res)
-        let ensemblIdList = filesNames.map(filename =>({ensembl_id:filename.split(".")[0], symbol: filename.split(".")[0]}))
-       // console.log("hi")
-       // console.log(req)
-         let data: any = { data:{ gene_search: [] } }
-         data.data.gene_search.push(ensemblIdList[0])
-         data.data.gene_search.push(ensemblIdList[1])
-         data.data.gene_search.push(ensemblIdList[2])
-         console.log(data.data.gene_search)
-         console.log("data Made")
-        res.send(JSON.stringify(data))
+    switch(req.body.operationName){
+        case "Gene":
+            return res.redirect(`/api/grch37`)
+        case "GeneCoverage":
+            return res.redirect(`/api/pcsk9`)
+        case "VariantsInGene":
+            
+            return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
     }
-   
-    catch(error){}
+    // if(req.body.operationName ==="Gene"){
+    //     //let url = `/api/${req.body.operationName}/${req.body.variables.geneId}`
+    //     let url = `/api/grch37`
+    //     console.log(req.body.operationName)
+    //     return res.redirect(url)
+    // }
+    
+        try{
+            let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
+            let filesNames: string[] = await getFilenamesFromDir(dir, res)
+            let ensemblIdList = filesNames.map(filename =>({ensembl_id:filename.split(".")[0], symbol: filename.split(".")[0]}))
+            let data: any = { data:{ gene_search: [] } }
+            data.data.gene_search.push(ensemblIdList[2000])
+            data.data.gene_search.push(ensemblIdList[90])
+            data.data.gene_search.push(ensemblIdList[4628])
+            data.data.gene_search.push(ensemblIdList[3752])
+            data.data.gene_search.push(ensemblIdList[3588])
+            data.data.gene_search.push(ensemblIdList[200])
+            res.send(JSON.stringify(data))
+        }
+       
+        catch(error){}
+    
 })
 
+app.get("/api/:operationName/:symbol",async function (req: Request, res: Response){
+
+   let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
+   try{
+    console.log("symbol",req.params.symbol)
+    let geneData= await fs.readFile(path.join(dir,`${req.params.symbol}.json`))
+    let jsonData = JSON.parse(geneData)
+    
+    res.send(JSON.stringify(jsonData))
+   }catch(err){console.log(err)}
+
+})
+
+app.get("/api/grch37",async function (req: Request, res: Response){
+
+    let dir = path.join(__dirname, <string>process.env.GENE_REFRENCE_FILES)
+    try{
+     let geneData= await fs.readFile(path.join(dir,`grch37_reference_stub.json`))
+     let jsonData = JSON.parse(geneData)
+     
+     res.send(JSON.stringify(jsonData))
+    }catch(err){console.log(err)}
+ 
+ })
+
+ app.get("/api/pcsk9",async function (req: Request, res: Response){
+
+    let dir = path.join(__dirname, <string>process.env.GENE_REFRENCE_FILES)
+    try{
+     let geneData= await fs.readFile(path.join(dir,`pcsk9_coverage_stub.json`))
+     let jsonData = JSON.parse(geneData)
+     
+     res.send(JSON.stringify(jsonData))
+    }catch(err){console.log(err)}
+ 
+ })
+
+
+
+app.post("/reads",async function (req: Request, res: Response){
+ console.log("inreads")
+})
 
 
 

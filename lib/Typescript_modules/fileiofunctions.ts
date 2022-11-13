@@ -30,7 +30,7 @@ export async function processLineByLine(filePath: string, destination: string) {
     //this is the general structure of the gnomad json files
     let gnomadJsonDataStructure: GnomadDataJson = {
         data: {
-            meta: {},
+            meta: {clinvar_release_date: "2022-01-04"},
             gene: {
                 clinvarVariants: [],
                 variants: []
@@ -105,7 +105,7 @@ export async function processLineByLine(filePath: string, destination: string) {
             prevEnsemblId = row[indexOfGeneFeature]
 
             //empty json to avoid going over the limit of javascript variable size
-            gnomadJsonDataStructure = { data: { meta: {}, gene: { clinvarVariants: [], variants: [] } } }
+            gnomadJsonDataStructure = { data: { meta: {clinvar_release_date: "2022-01-04"}, gene: { clinvarVariants: [], variants: [] } } }
             writeStream.end()
         }
     }

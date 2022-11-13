@@ -116,21 +116,79 @@ app.post("/upload_data", function (req, res) {
 });
 app.post("/api", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        switch (req.body.operationName) {
+            case "Gene":
+                return res.redirect(`/api/grch37`);
+            case "GeneCoverage":
+                return res.redirect(`/api/pcsk9`);
+            case "VariantsInGene":
+                return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`);
+        }
+        // if(req.body.operationName ==="Gene"){
+        //     //let url = `/api/${req.body.operationName}/${req.body.variables.geneId}`
+        //     let url = `/api/grch37`
+        //     console.log(req.body.operationName)
+        //     return res.redirect(url)
+        // }
         try {
             let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
             let filesNames = yield getFilenamesFromDir(dir, res);
             let ensemblIdList = filesNames.map(filename => ({ ensembl_id: filename.split(".")[0], symbol: filename.split(".")[0] }));
-            // console.log("hi")
-            // console.log(req)
             let data = { data: { gene_search: [] } };
-            data.data.gene_search.push(ensemblIdList[0]);
-            data.data.gene_search.push(ensemblIdList[1]);
-            data.data.gene_search.push(ensemblIdList[2]);
-            console.log(data.data.gene_search);
-            console.log("data Made");
+            data.data.gene_search.push(ensemblIdList[2000]);
+            data.data.gene_search.push(ensemblIdList[90]);
+            data.data.gene_search.push(ensemblIdList[4628]);
+            data.data.gene_search.push(ensemblIdList[3752]);
+            data.data.gene_search.push(ensemblIdList[3588]);
+            data.data.gene_search.push(ensemblIdList[200]);
             res.send(JSON.stringify(data));
         }
         catch (error) { }
+    });
+});
+app.get("/api/:operationName/:symbol", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
+        try {
+            console.log("symbol", req.params.symbol);
+            let geneData = yield fs.readFile(path.join(dir, `${req.params.symbol}.json`));
+            let jsonData = JSON.parse(geneData);
+            res.send(JSON.stringify(jsonData));
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+});
+app.get("/api/grch37", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let dir = path.join(__dirname, process.env.GENE_REFRENCE_FILES);
+        try {
+            let geneData = yield fs.readFile(path.join(dir, `grch37_reference_stub.json`));
+            let jsonData = JSON.parse(geneData);
+            res.send(JSON.stringify(jsonData));
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+});
+app.get("/api/pcsk9", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let dir = path.join(__dirname, process.env.GENE_REFRENCE_FILES);
+        try {
+            let geneData = yield fs.readFile(path.join(dir, `pcsk9_coverage_stub.json`));
+            let jsonData = JSON.parse(geneData);
+            res.send(JSON.stringify(jsonData));
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+});
+app.post("/reads", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("inreads");
     });
 });
 app.listen(port, function () {

@@ -3,7 +3,7 @@ export class ClinvarVariant {
 
     clinical_significance: string
     clinvar_variation_id: string
-    gnomad: null
+    gnomad: {}
     gold_stars: 1
     hgvsc: string
     hgvsp: string
@@ -17,7 +17,7 @@ export class ClinvarVariant {
     constructor(row: string[], gnomad_json_features: string[], gnomad_to_indices_mapp: any[]) {
         this.clinical_significance = this.feature_to_variant_value("clinical_significance", row, gnomad_json_features, gnomad_to_indices_mapp)
         this.clinvar_variation_id = this.feature_to_variant_value("clinvar_variation_id", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.gnomad = null
+        this.gnomad = {exome:null , genome:null}
         this.gold_stars = 1
         this.hgvsc = this.feature_to_variant_value("hgvsc", row, gnomad_json_features, gnomad_to_indices_mapp)
         this.hgvsp = this.feature_to_variant_value("hgvsp", row, gnomad_json_features, gnomad_to_indices_mapp)
