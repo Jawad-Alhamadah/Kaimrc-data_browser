@@ -35,10 +35,11 @@ let jsonCount = 0;
 for (let index = 0; index < variables_1.gnomadFieldnames.length; index++) {
     vcf_to_gnomad_map[variables_1.gnomadFieldnames[index]] = variables_1.vcfFeatures[index];
 }
+let prevId = "";
 function processLineByLine() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const fileStream = fs.createReadStream(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Wed-Oct-26-2022_(_H1-M8-S50_)_1666735730388.txt");
+        const fileStream = fs.createReadStream(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Sun-Nov-13-2022_(_1H-14M-37S_)_1668291277248.txt");
         //.......
         const rl = readline.createInterface({
             input: fileStream,
@@ -61,6 +62,8 @@ function processLineByLine() {
                 }
             }
         };
+        let geneNum = 0;
+        let geneIdMapping = {};
         try {
             for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
                 const line = rl_1_1.value;
@@ -71,6 +74,8 @@ function processLineByLine() {
                     row.forEach((col_name, index) => {
                         if (variables_1.vcfFeatures.includes(col_name.toLowerCase()))
                             indices.push(index);
+                        if (col_name.toLowerCase() === "gene")
+                            geneNum = index;
                     });
                     for (let index = 0; index < indices.length; index++) {
                         let key = indices[index];
@@ -80,22 +85,42 @@ function processLineByLine() {
                     }
                     // row.forEach( e =>  { if( e.toLowerCase().includes("hg") ) console.log(e) })
                     // break;
+                    row.forEach((col_name, index) => {
+                        if (variables_1.vcfFeatures.includes(col_name.toLowerCase()))
+                            indices.push(index);
+                    });
+                    is_first_line = false;
+                    continue;
                 }
-                is_first_line = false;
+                //console.log("gene : ", row[geneNum])
                 let clinvar_variant = new ClinvarVariant_1.ClinvarVariant(row, vcf_to_gnomad_map, mapping);
                 let variant = new Variant_1.Variant(row, vcf_to_gnomad_map, mapping);
+                // let match = geneIdMapping.some(object => object.id ===row[geneNum])//geneIdMapping.find((object,index) => object.id ===row[geneNum])
+                // if(match){
+                //   //geneIdMapping[match].count+=1
+                // }
+                // else{
+                //   geneIdMapping.push({id:row[geneNum],jsonFileNumber:jsonCount,count:0})
+                // }
+                //let geneValue = indices.map(index => {rowName: vcfFeatures[row[index]],value:row[index]})
                 json_structure.data.gene.clinvarVariants.push(clinvar_variant.toJson());
                 json_structure.data.gene.variants.push(variant.toJson());
                 count++;
                 dot_counter++;
-                if (dot_counter >= 5000) {
+                if (dot_counter >= 1000) {
                     process.stdout.write(".");
                     dot_counter = 0;
+                    // break
                 }
-                if (count >= 100000) {
+                //count >= 1000
+                console.log(row[geneNum]);
+                if (!prevId.includes(row[geneNum])) {
+                    continue;
+                    // console.log(geneIdMapping)
                     count = 0;
-                    let writeStream = fs.createWriteStream(__dirname + "/json_files/myjson" + jsonCount + ".json");
+                    let writeStream = fs.createWriteStream(__dirname + "/json_files/" + prevId + ".json");
                     jsonCount++;
+                    prevId = row[geneNum];
                     writeStream.write(JSON.stringify(json_structure, null, 4));
                     json_structure = {
                         data: {
@@ -117,8 +142,9 @@ function processLineByLine() {
             }
             finally { if (e_1) throw e_1.error; }
         }
+        //console.log(geneIdMapping.length)
         if (json_structure.data.gene.clinvarVariants.length) {
-            let writeStream = fs.createWriteStream(__dirname + "/json_files/myjson" + jsonCount + ".json");
+            let writeStream = fs.createWriteStream(__dirname + "/json_files/" + prevId + ".json");
             jsonCount++;
             writeStream.write(JSON.stringify(json_structure, null, 4));
             writeStream.end();

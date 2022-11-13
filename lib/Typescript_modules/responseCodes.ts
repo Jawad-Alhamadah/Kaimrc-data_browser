@@ -1,0 +1,8 @@
+export const SUCCESS = 200
+export const CREATED=201
+export const NOT_FOUND=404
+export const ALREADY_EXISTS=409
+export const UNAUTHORIZED=401
+export const FORBIDDEN=403
+export const SERVER_ERROR=500
+//module.exports={SUCCESS,CREATED,NOT_FOUND,ALREADY_EXISTS,UNAUTHORIZED,FORBIDDEN,SERVER_ERROR}
