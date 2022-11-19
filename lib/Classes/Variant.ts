@@ -33,39 +33,50 @@ export class Variant {
     lof_curation: null = null
 
 
-    constructor(row: string[], gnomadJsonFeatures: string[], gnomadToIndicesMap: any[]) {
-        this.consequence = this.feature_to_variant_value("consequence", row, gnomadJsonFeatures, gnomadToIndicesMap)
+    constructor(row: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
+        let variant:string = this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices)
+        let hgvsc:string  = this.getValueByField("hgvsc", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
+        let hgvsp:string  = this.getValueByField("hgvsp", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
+        let hgvs:string  = this.getValueByField("hgvs", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
+        let chrom  :string = this.getValueByField("chrom", row, gnomadToVcfMap, vcfFieldsToIndices)
+        let chromNum :string = chrom.match(/[0-9]+/gm)? chrom.match(/[0-9]+/gm)![0] : "NA"
+        this.consequence = this.getValueByField("consequence", row, gnomadToVcfMap, vcfFieldsToIndices)
         this.flags = []
-        this.hgvs = this.feature_to_variant_value("hgvs", row, gnomadJsonFeatures, gnomadToIndicesMap)
-        this.hgvsc = this.feature_to_variant_value("hgvsc", row, gnomadJsonFeatures, gnomadToIndicesMap)
-        this.hgvsp = this.feature_to_variant_value("hgvsp", row, gnomadJsonFeatures, gnomadToIndicesMap)
+        this.hgvsc = hgvsc? hgvsc :"NA"
+        this.hgvsp = hgvsp? hgvsp : "NA"
+        this.hgvs =  hgvs? hgvs: "NA"
         this.lof = null
         this.lof_filter = null
         this.lof_flags = null
-        this.pos = Number(this.feature_to_variant_value("pos", row, gnomadJsonFeatures, gnomadToIndicesMap))
+        this.pos = Number(this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices))
         this.rsids = []
-        this.transcript_id = this.feature_to_variant_value("transcript_id", row, gnomadJsonFeatures, gnomadToIndicesMap)
-        this.transcript_version = this.feature_to_variant_value("transcript_version", row, gnomadJsonFeatures, gnomadToIndicesMap)
-        this.variant_id = this.feature_to_variant_value("variant_id", row, gnomadJsonFeatures, gnomadToIndicesMap)
+        this.transcript_id = this.getValueByField("transcript_id", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.transcript_version = this.getValueByField("transcript_version", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.variant_id = chromNum+"-"+variant+"-"+
+                        this.getValueByField("ref", row, gnomadToVcfMap, vcfFieldsToIndices)+
+                        "-"+
+                        this.getValueByField("alt", row, gnomadToVcfMap, vcfFieldsToIndices)
+       // this.variant_id = this.getValueByField("variant_id", row, gnomadToVcfMap, vcfFieldsToIndices)
+        //this.variant_id = "1-1-"+this.feature_to_variant_value("ref", row, gnomadJsonFeatures, gnomadToIndicesMap)+"-"+this.feature_to_variant_value("alt", row, gnomadJsonFeatures, gnomadToIndicesMap)
         this.exome = null
         this.genome = {
-            ac: Number(this.feature_to_variant_value("ac", row, gnomadJsonFeatures, gnomadToIndicesMap)),
-            ac_hemi: Number(this.feature_to_variant_value("ac_hemi", row, gnomadJsonFeatures, gnomadToIndicesMap)),
-            ac_hom: Number(this.feature_to_variant_value("ac_hom", row, gnomadJsonFeatures, gnomadToIndicesMap)),
-            an: Number(this.feature_to_variant_value("an", row, gnomadJsonFeatures, gnomadToIndicesMap)) * 2,
-            af: Number(this.feature_to_variant_value("af", row, gnomadJsonFeatures, gnomadToIndicesMap)),
+            ac: Number(this.getValueByField("ac", row, gnomadToVcfMap, vcfFieldsToIndices)),
+            ac_hemi: Number(this.getValueByField("ac_hemi", row, gnomadToVcfMap, vcfFieldsToIndices)),
+            ac_hom: Number(this.getValueByField("ac_hom", row, gnomadToVcfMap, vcfFieldsToIndices)),
+            an: Number(this.getValueByField("an", row, gnomadToVcfMap, vcfFieldsToIndices)) * 2,
+            af: Number(this.getValueByField("af", row, gnomadToVcfMap, vcfFieldsToIndices)),
             filters: [],
             populations: []
         }
         this.lof_curation = null
 
     }
-    feature_to_variant_value(feature: string, valuesRow: string[], clinvarGnomadToIndicesMap: string[], indicesGnomadToIndicesMap: number[]) {
+    getValueByField(feature: string, valuesRow: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: number[]) {
         //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
-        return valuesRow[this.retrive_mapped_value(this.retrive_mapped_value(feature, clinvarGnomadToIndicesMap), indicesGnomadToIndicesMap)]
+        return valuesRow[this.retriveMappedValue(this.retriveMappedValue(feature, gnomadToVcfMap), vcfFieldsToIndices)]
 
     }
-    retrive_mapped_value(name: string, map: any) {
+    retriveMappedValue(name: string, map: any) {
         return map[name]
     }
     toJson() {

@@ -15,10 +15,12 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 //.....
-const Variant_1 = require("./lib/Classes/Variant");
-const ClinvarVariant_1 = require("./lib/Classes/ClinvarVariant");
+const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 const variables_1 = require("./lib/Typescript_modules/variables");
 const fs = require("fs"); //mycomment
 const readline = require("readline");
@@ -39,7 +41,7 @@ let prevId = "";
 function processLineByLine() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const fileStream = fs.createReadStream(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Sun-Nov-13-2022_(_1H-14M-37S_)_1668291277248.txt");
+        const fileStream = fs.createReadStream(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Tue-Nov-15-2022_(_10H-58M-57S_)_1668542337171.txt");
         //.......
         const rl = readline.createInterface({
             input: fileStream,
@@ -57,13 +59,17 @@ function processLineByLine() {
             data: {
                 meta: {},
                 gene: {
-                    clinvarVariants: [],
+                    clinvar_variants: [],
                     variants: []
                 }
             }
         };
         let geneNum = 0;
         let geneIdMapping = {};
+        let myList = [];
+        let inxmyList = [];
+        let featureCounter = 0;
+        let mylist = [];
         try {
             for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
                 const line = rl_1_1.value;
@@ -89,32 +95,49 @@ function processLineByLine() {
                         if (variables_1.vcfFeatures.includes(col_name.toLowerCase()))
                             indices.push(index);
                     });
+                    //print columns
+                    let searchTerms = "hgv";
+                    let searchList = searchTerms.split(/\|/g);
+                    mylist = searchAndCreateKeyValuePairs(row, searchList);
                     is_first_line = false;
+                    // break
                     continue;
                 }
-                //console.log("gene : ", row[geneNum])
-                let clinvar_variant = new ClinvarVariant_1.ClinvarVariant(row, vcf_to_gnomad_map, mapping);
-                let variant = new Variant_1.Variant(row, vcf_to_gnomad_map, mapping);
-                // let match = geneIdMapping.some(object => object.id ===row[geneNum])//geneIdMapping.find((object,index) => object.id ===row[geneNum])
-                // if(match){
-                //   //geneIdMapping[match].count+=1
+                // if(row.includes("DDX11L1")){
+                //   console.log("entry num : " , count)
+                //   featureCounter++;
                 // }
-                // else{
-                //   geneIdMapping.push({id:row[geneNum],jsonFileNumber:jsonCount,count:0})
-                // }
-                //let geneValue = indices.map(index => {rowName: vcfFeatures[row[index]],value:row[index]})
-                json_structure.data.gene.clinvarVariants.push(clinvar_variant.toJson());
-                json_structure.data.gene.variants.push(variant.toJson());
+                mylist.forEach((ele) => {
+                    console.log(cmd_colors_1.default.Red("col_name: ") + cmd_colors_1.default.Blue(ele.colName) + cmd_colors_1.default.Red(" value: ") + cmd_colors_1.default.Blue(row[ele.index]));
+                });
+                console.log("................ ");
+                console.log("................ ");
+                console.log("................ ");
+                // let clinvar_variant: ClinvarVariant = new ClinvarVariant(row, vcf_to_gnomad_map, mapping)
+                // let variant: Variant = new Variant(row, vcf_to_gnomad_map, mapping)
+                // json_structure.data.gene.clinvar_variants.push(clinvar_variant.toJson())
+                // json_structure.data.gene.variants.push(variant.toJson())
                 count++;
                 dot_counter++;
-                if (dot_counter >= 1000) {
+                if (dot_counter >= 10000) {
                     process.stdout.write(".");
                     dot_counter = 0;
+                    let searchTerms = "ref|alt|ense|symbol|position|chr|var|existing_variation|chrom|hgv";
+                    let searchList = searchTerms.split(/\|/g);
+                    searchAndCreateKeyValuePairs(row, searchList);
+                    // let match = geneIdMapping.some(object => object.id ===row[geneNum])//geneIdMapping.find((object,index) => object.id ===row[geneNum])
+                    // if(match){
+                    //   //geneIdMapping[match].count+=1
+                    // }
+                    // else{
+                    //   geneIdMapping.push({id:row[geneNum],jsonFileNumber:jsonCount,count:0})
+                    // }
+                    //let geneValue = indices.map(index => {rowName: vcfFeatures[row[index]],value:row[index]})
                     // break
                 }
                 //count >= 1000
-                console.log(row[geneNum]);
-                if (!prevId.includes(row[geneNum])) {
+                // console.log(row[geneNum])
+                if (!(prevId === row[geneNum])) {
                     continue;
                     // console.log(geneIdMapping)
                     count = 0;
@@ -126,7 +149,7 @@ function processLineByLine() {
                         data: {
                             meta: {},
                             gene: {
-                                clinvarVariants: [],
+                                clinvar_variants: [],
                                 variants: []
                             }
                         }
@@ -142,8 +165,9 @@ function processLineByLine() {
             }
             finally { if (e_1) throw e_1.error; }
         }
+        console.log(featureCounter);
         //console.log(geneIdMapping.length)
-        if (json_structure.data.gene.clinvarVariants.length) {
+        if (json_structure.data.gene.clinvar_variants.length) {
             let writeStream = fs.createWriteStream(__dirname + "/json_files/" + prevId + ".json");
             jsonCount++;
             writeStream.write(JSON.stringify(json_structure, null, 4));
@@ -153,4 +177,20 @@ function processLineByLine() {
         console.timeEnd("time:");
     });
 }
+function searchAndCreateKeyValuePairs(values, searchList) {
+    let list = [];
+    values.forEach((col_name, i) => {
+        searchList.forEach(key => {
+            if (col_name.toLowerCase().includes(key)) {
+                // myList.push({colName :col_name, value:})
+                list.push({ colName: col_name, index: i });
+            }
+        });
+    });
+    return list;
+}
+function getIndexFilter(stringOfElements) {
+    return;
+}
 processLineByLine();
+//# sourceMappingURL=test.js.map

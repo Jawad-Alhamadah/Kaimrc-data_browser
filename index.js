@@ -29,6 +29,7 @@ let responseCode = require("./lib/Typescript_modules/responseCodes");
 var path = require('path');
 const multer = require("multer");
 let port = 5000;
+let refNum = "";
 let storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // Uploads is the Upload_folder_name
@@ -102,11 +103,18 @@ app.post("/upload_data", function (req, res) {
                     //success
                     res.status(responseCode.CREATED).send("File Uploaded");
                     //since upload is successful, we deleted the old file.
-                    yield deleteFile(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR);
-                    let filename = req.file.filename;
-                    let fullPath = path.join(path.join(__dirname, "/genome_data_files/"), filename);
-                    let writeFilesDestination = path.join(__dirname, "json_files");
-                    yield (0, fileiofunctions_1.processLineByLine)(fullPath, writeFilesDestination);
+                    if (oldFilename)
+                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR);
+                    let vcfFoldername = path.join(__dirname, "/genome_data_files/");
+                    let vcfFilename = req.file.filename;
+                    let vcfFullPath = path.join(vcfFoldername, vcfFilename);
+                    let jsonsFolderName = path.join(__dirname, "/json_files/");
+                    let jsonFiles = yield getFilenamesFromDir(jsonsFolderName, res);
+                    for (const file of jsonFiles) {
+                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR);
+                    }
+                    let writeFilesDestination = jsonsFolderName;
+                    yield (0, fileiofunctions_1.processLineByLine)(vcfFullPath, writeFilesDestination);
                     console.log("done processing");
                 });
             });
@@ -118,11 +126,15 @@ app.post("/api", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (req.body.operationName) {
             case "Gene":
+                refNum = req.body.variables.geneId;
                 return res.redirect(`/api/grch37`);
             case "GeneCoverage":
                 return res.redirect(`/api/pcsk9`);
             case "VariantsInGene":
-                return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`);
+                //console.log(req.variables)
+                return res.redirect(`/api/${req.body.operationName}/${refNum}`);
+            //return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
+            // return res.redirect(`/api/${req.body.operationName}/clinvar_stub`)
         }
         // if(req.body.operationName ==="Gene"){
         //     //let url = `/api/${req.body.operationName}/${req.body.variables.geneId}`
@@ -133,14 +145,29 @@ app.post("/api", function (req, res) {
         try {
             let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
             let filesNames = yield getFilenamesFromDir(dir, res);
-            let ensemblIdList = filesNames.map(filename => ({ ensembl_id: filename.split(".")[0], symbol: filename.split(".")[0] }));
+            let ensemblIdList = filesNames.map(filename => {
+                let ensemblId = filename.split(".")[0].split("-")[1];
+                let symbol = filename.split(".")[0].split("-")[0];
+                let keyVale = { ensembl_id: ensemblId, symbol: symbol };
+                return keyVale;
+            });
             let data = { data: { gene_search: [] } };
-            data.data.gene_search.push(ensemblIdList[2000]);
-            data.data.gene_search.push(ensemblIdList[90]);
-            data.data.gene_search.push(ensemblIdList[4628]);
-            data.data.gene_search.push(ensemblIdList[3752]);
-            data.data.gene_search.push(ensemblIdList[3588]);
-            data.data.gene_search.push(ensemblIdList[200]);
+            for (let i = 0; i < 10; i++) {
+                let rand = Math.floor(Math.random() * (20000 - 0) + 0);
+                data.data.gene_search.push(ensemblIdList[rand]);
+            }
+            data.data.gene_search.push({ ensembl_id: "ENSG00000151136", symbol: "clinvar_stub" });
+            // data.data.gene_search.push(ensemblIdList[2000])
+            // data.data.gene_search.push(ensemblIdList[90])
+            //  data.data.gene_search.push(ensemblIdList[4628])
+            //  data.data.gene_search.push(ensemblIdList[3752])
+            //  data.data.gene_search.push(ensemblIdList[3588])
+            //  data.data.gene_search.push(ensemblIdList[200])
+            //  data.data.gene_search.push(ensemblIdList[16287])
+            //  data.data.gene_search.push(ensemblIdList[20000])
+            //  data.data.gene_search.push(ensemblIdList[12005])
+            //  data.data.gene_search.push(ensemblIdList[10000])
+            // data.data.gene_search.push({ensembl_id:"clinvar_stub", symbol: "clinvar_stub"})
             res.send(JSON.stringify(data));
         }
         catch (error) { }
@@ -148,10 +175,18 @@ app.post("/api", function (req, res) {
 });
 app.get("/api/:operationName/:symbol", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        let readDir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
+        let filesNames = yield getFilenamesFromDir(readDir, res);
+        let filename = "";
+        req.params.symbol;
+        filesNames.forEach(element => {
+            if (element.includes(req.params.symbol))
+                filename = element;
+        });
         let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
         try {
-            console.log("symbol", req.params.symbol);
-            let geneData = yield fs.readFile(path.join(dir, `${req.params.symbol}.json`));
+            //console.log("symbol",req.params.symbol)
+            let geneData = yield fs.readFile(path.join(dir, filename));
             let jsonData = JSON.parse(geneData);
             res.send(JSON.stringify(jsonData));
         }
@@ -186,6 +221,32 @@ app.get("/api/pcsk9", function (req, res) {
         }
     });
 });
+app.get("/process", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let vcfFoldername = path.join(__dirname, "/genome_data_files/");
+        let vcfFilename = yield getFilenamesFromDir(vcfFoldername, res);
+        let vcfFullPath = path.join(vcfFoldername, vcfFilename[0]);
+        let jsonsFolderName = path.join(__dirname, "/json_files/");
+        let jsonFiles = yield getFilenamesFromDir(jsonsFolderName, res);
+        for (const file of jsonFiles) {
+            yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR);
+        }
+        let writeFilesDestination = jsonsFolderName;
+        yield (0, fileiofunctions_1.processLineByLine)(vcfFullPath, writeFilesDestination);
+        console.log("done processing");
+        res.send("processed!");
+        // let folderPath:string = path.join(__dirname, "/genome_data_files")
+        // let files: string[] =  await getFilenamesFromDir(folderPath,res)
+        // //console.log(files)
+        // files.forEach( async function(file) {
+        //     await deleteFile(req, res, path.join(folderName, file), responseCode.SERVER_ERROR)
+        // });
+        // let filename =files[0]
+        // let fullPath: string = path.join(folderPath, filename)
+        // let writeFilesDestination: string = path.join(__dirname, "json_files")
+        // await processLineByLine(fullPath, writeFilesDestination)
+    });
+});
 app.post("/reads", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("inreads");
@@ -195,18 +256,6 @@ app.listen(port, function () {
     console.log(cmd_colors_1.default.Magenta("Listening To Port : "), cmd_colors_1.default.Orange(`${port}`));
 });
 //this function deletes a file by request.
-function deleteFile(req, res, path, errorCode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield fs.unlink(path);
-        }
-        catch (error) {
-            res.status(errorCode ? errorCode : 500).send();
-            console.log("couldn't delete File");
-            throw error;
-        }
-    });
-}
 function uploadFileFromUser(req, res, errorCode) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -291,3 +340,4 @@ function getFilenamesFromDir(dir, res, errorCode) {
 ////   console.log(CMD.Red(`unhandledRejection : ${err}`))
 //});
 //processLineByLine(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Fri-Nov-04-2022_(_9H-50M-54S_)_1667587854600.txt", __dirname + "/json_files")
+//# sourceMappingURL=index.js.map

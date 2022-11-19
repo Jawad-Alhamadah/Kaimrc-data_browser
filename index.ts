@@ -11,13 +11,13 @@ import bodyParser, { json } from 'body-parser'
 const { promises: fs } = require("fs");
 let fsRename = util.promisify(fs.rename)
 //let fsReadDir = util.promisify(fs.readdir)
-import { processLineByLine } from "./lib/Typescript_modules/fileiofunctions"
+import { processLineByLine ,deleteFile } from "./lib/Typescript_modules/fileiofunctions"
 import axios from 'axios'
 let responseCode = require("./lib/Typescript_modules/responseCodes")
 var path = require('path')
 const multer = require("multer")
 let port: number = 5000;
-
+let refNum:string = ""
 //
 interface MulterRequest extends Request {
     file: any;
@@ -105,11 +105,22 @@ app.post("/upload_data", async function (req: Request, res: Response) {
 
             res.status(responseCode.CREATED).send("File Uploaded")
             //since upload is successful, we deleted the old file.
-            await deleteFile(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR)
-            let filename: string = (req as MulterRequest).file.filename
-            let fullPath: string = path.join(path.join(__dirname, "/genome_data_files/"), filename)
-            let writeFilesDestination: string = path.join(__dirname, "json_files")
-            await processLineByLine(fullPath, writeFilesDestination)
+           if(oldFilename) await deleteFile(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR)
+           
+           
+            let vcfFoldername: string = path.join(__dirname, "/genome_data_files/")
+            let vcfFilename: string = (req as MulterRequest).file.filename
+            let vcfFullPath: string = path.join(vcfFoldername, vcfFilename)
+
+            let jsonsFolderName: string = path.join(__dirname, "/json_files/")
+            let jsonFiles: string[] =  await getFilenamesFromDir(jsonsFolderName,res)
+            
+            for(const file of jsonFiles) {
+                await deleteFile(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR)
+            }
+
+            let writeFilesDestination: string = jsonsFolderName
+            await processLineByLine(vcfFullPath, writeFilesDestination)
             console.log("done processing")
 
         })
@@ -117,15 +128,18 @@ app.post("/upload_data", async function (req: Request, res: Response) {
     } catch (error) { }
 })
 
-app.post("/api",async function (req: Request, res: Response){
+app.post("/api",async function (req: any, res: Response){
     switch(req.body.operationName){
         case "Gene":
+            refNum = req.body.variables.geneId
             return res.redirect(`/api/grch37`)
         case "GeneCoverage":
             return res.redirect(`/api/pcsk9`)
         case "VariantsInGene":
-            
-            return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
+            //console.log(req.variables)
+            return res.redirect(`/api/${req.body.operationName}/${refNum}`)
+            //return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
+           // return res.redirect(`/api/${req.body.operationName}/clinvar_stub`)
     }
     // if(req.body.operationName ==="Gene"){
     //     //let url = `/api/${req.body.operationName}/${req.body.variables.geneId}`
@@ -135,16 +149,33 @@ app.post("/api",async function (req: Request, res: Response){
     // }
     
         try{
+           
             let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
             let filesNames: string[] = await getFilenamesFromDir(dir, res)
-            let ensemblIdList = filesNames.map(filename =>({ensembl_id:filename.split(".")[0], symbol: filename.split(".")[0]}))
+           
+            let ensemblIdList = filesNames.map(filename =>{
+                let ensemblId = filename.split(".")[0].split("-")[1]
+                let symbol = filename.split(".")[0].split("-")[0]
+                let keyVale = { ensembl_id:ensemblId, symbol:symbol }
+               return keyVale
+            })
             let data: any = { data:{ gene_search: [] } }
-            data.data.gene_search.push(ensemblIdList[2000])
-            data.data.gene_search.push(ensemblIdList[90])
-            data.data.gene_search.push(ensemblIdList[4628])
-            data.data.gene_search.push(ensemblIdList[3752])
-            data.data.gene_search.push(ensemblIdList[3588])
-            data.data.gene_search.push(ensemblIdList[200])
+            for(let i =0;i<10;i++){
+                let rand =Math.floor(Math.random() * (20000 - 0) + 0)
+                data.data.gene_search.push(ensemblIdList[rand])
+            }
+            data.data.gene_search.push({ ensembl_id:"ENSG00000151136", symbol:"clinvar_stub"})
+            // data.data.gene_search.push(ensemblIdList[2000])
+            // data.data.gene_search.push(ensemblIdList[90])
+            //  data.data.gene_search.push(ensemblIdList[4628])
+            //  data.data.gene_search.push(ensemblIdList[3752])
+            //  data.data.gene_search.push(ensemblIdList[3588])
+            //  data.data.gene_search.push(ensemblIdList[200])
+            //  data.data.gene_search.push(ensemblIdList[16287])
+            //  data.data.gene_search.push(ensemblIdList[20000])
+            //  data.data.gene_search.push(ensemblIdList[12005])
+            //  data.data.gene_search.push(ensemblIdList[10000])
+            // data.data.gene_search.push({ensembl_id:"clinvar_stub", symbol: "clinvar_stub"})
             res.send(JSON.stringify(data))
         }
        
@@ -152,12 +183,20 @@ app.post("/api",async function (req: Request, res: Response){
     
 })
 
-app.get("/api/:operationName/:symbol",async function (req: Request, res: Response){
-
+app.get("/api/:operationName/:symbol",async function (req: any, res: Response){
+    let readDir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
+    let filesNames: string[] = await getFilenamesFromDir(readDir, res)
+    let filename:string =""
+    req.params.symbol
+    filesNames.forEach(element => {
+        if (element.includes(req.params.symbol)) filename =element
+        
+    });
    let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
    try{
-    console.log("symbol",req.params.symbol)
-    let geneData= await fs.readFile(path.join(dir,`${req.params.symbol}.json`))
+
+    //console.log("symbol",req.params.symbol)
+    let geneData= await fs.readFile(path.join(dir,filename))
     let jsonData = JSON.parse(geneData)
     
     res.send(JSON.stringify(jsonData))
@@ -189,7 +228,35 @@ app.get("/api/grch37",async function (req: Request, res: Response){
  
  })
 
+app.get( "/process",async function(req: Request, res: Response){
+    let vcfFoldername: string = path.join(__dirname, "/genome_data_files/")
+    let vcfFilename: string = await getFilenamesFromDir(vcfFoldername,res)
+    let vcfFullPath: string = path.join(vcfFoldername, vcfFilename[0])
 
+    let jsonsFolderName: string = path.join(__dirname, "/json_files/")
+    let jsonFiles: string[] =  await getFilenamesFromDir(jsonsFolderName,res)
+    
+    for(const file of jsonFiles) {
+        await deleteFile(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR)
+    }
+    let writeFilesDestination: string = jsonsFolderName
+    await processLineByLine(vcfFullPath, writeFilesDestination)
+    console.log("done processing")
+    res.send("processed!")
+
+
+
+            // let folderPath:string = path.join(__dirname, "/genome_data_files")
+            // let files: string[] =  await getFilenamesFromDir(folderPath,res)
+            // //console.log(files)
+            // files.forEach( async function(file) {
+            //     await deleteFile(req, res, path.join(folderName, file), responseCode.SERVER_ERROR)
+            // });
+            // let filename =files[0]
+            // let fullPath: string = path.join(folderPath, filename)
+            // let writeFilesDestination: string = path.join(__dirname, "json_files")
+            // await processLineByLine(fullPath, writeFilesDestination)
+})
 
 app.post("/reads",async function (req: Request, res: Response){
  console.log("inreads")
@@ -204,17 +271,7 @@ app.listen(port, function () {
 })
 
 //this function deletes a file by request.
-async function deleteFile(req: Request, res: Response, path: string, errorCode?: number) {
-    try {
-        await fs.unlink(path)
-    }
-    catch (error) {
-        res.status(errorCode ? errorCode : 500).send()
-        console.log("couldn't delete File")
-        throw error
-    }
 
-}
 
 async function uploadFileFromUser(req: Request, res: Response, errorCode?: number) {
     try {

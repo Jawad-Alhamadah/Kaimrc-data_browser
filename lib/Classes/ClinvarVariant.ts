@@ -4,7 +4,7 @@ export class ClinvarVariant {
     clinical_significance: string
     clinvar_variation_id: string
     gnomad: {}
-    gold_stars: 1
+    gold_stars: number
     hgvsc: string
     hgvsp: string
     in_gnomad: true
@@ -13,27 +13,40 @@ export class ClinvarVariant {
     review_status: string
     transcript_id: string
     variant_id: string
+    symbol: string
 
-    constructor(row: string[], gnomad_json_features: string[], gnomad_to_indices_mapp: any[]) {
-        this.clinical_significance = this.feature_to_variant_value("clinical_significance", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.clinvar_variation_id = this.feature_to_variant_value("clinvar_variation_id", row, gnomad_json_features, gnomad_to_indices_mapp)
+    constructor(row: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
+        let variant:string = this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices)
+        let hgvsc = this.getValueByField("hgvsc", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
+        let hgvsp = this.getValueByField("hgvsp", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
+        let chrom  :string = this.getValueByField("chrom", row, gnomadToVcfMap, vcfFieldsToIndices)
+        let chromNum :string = chrom.match(/[0-9]+/gm)? chrom.match(/[0-9]+/gm)![0] : "NA"
+       // if(variant==="-")
+        //    variant="1234567"
+        this.clinical_significance = this.getValueByField("clinical_significance", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.clinvar_variation_id = this.getValueByField("clinvar_variation_id", row, gnomadToVcfMap, vcfFieldsToIndices)
         this.gnomad = {exome:null , genome:null}
-        this.gold_stars = 1
-        this.hgvsc = this.feature_to_variant_value("hgvsc", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.hgvsp = this.feature_to_variant_value("hgvsp", row, gnomad_json_features, gnomad_to_indices_mapp)
+        this.gold_stars = 5
+        this.hgvsc = hgvsc? hgvsc :"NA"
+        this.hgvsp = hgvsp? hgvsp : "NA"
         this.in_gnomad = true
-        this.major_consequence = this.feature_to_variant_value("major_consequence", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.pos = Number(this.feature_to_variant_value("pos", row, gnomad_json_features, gnomad_to_indices_mapp))
-        this.review_status = this.feature_to_variant_value("review_status", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.transcript_id = this.feature_to_variant_value("transcript_id", row, gnomad_json_features, gnomad_to_indices_mapp)
-        this.variant_id = this.feature_to_variant_value("variant_id", row, gnomad_json_features, gnomad_to_indices_mapp)
+        this.major_consequence = this.getValueByField("major_consequence", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.pos = Number(this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices))
+        this.review_status = this.getValueByField("review_status", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.transcript_id = this.getValueByField("transcript_id", row, gnomadToVcfMap, vcfFieldsToIndices)
+       // this.variant_id = this.feature_to_variant_value("variant_id", row, gnomad_json_features, gnomad_to_indices_mapp)
+        this.symbol = this.getValueByField("symbol", row, gnomadToVcfMap, vcfFieldsToIndices)
+        this.variant_id = chromNum+"-"+variant+"-"+
+                        this.getValueByField("ref", row, gnomadToVcfMap, vcfFieldsToIndices)+
+                        "-"+
+                        this.getValueByField("alt", row, gnomadToVcfMap, vcfFieldsToIndices)
     }
-    feature_to_variant_value(feature: string, values_row: string[], clinvar_gnomad_to_indices_mapp: string[], indices_gnomad_to_indices_mapp: number[]) {
+    getValueByField(feature: string, rowOfValues: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: number[]) {
         //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
-        return values_row[this.retrive_mapped_value(this.retrive_mapped_value(feature, clinvar_gnomad_to_indices_mapp), indices_gnomad_to_indices_mapp)]
+        return rowOfValues[this.retriveMappedValue(this.retriveMappedValue(feature, gnomadToVcfMap), vcfFieldsToIndices)]
 
     }
-    retrive_mapped_value(name: string, map: any) {
+    retriveMappedValue(name: string, map: any) {
         return map[name]
     }
     toJson() {
@@ -49,7 +62,8 @@ export class ClinvarVariant {
             pos: this.pos,
             review_status: this.review_status,
             transcript_id: this.transcript_id,
-            variant_id: this.variant_id
+            variant_id: this.variant_id,
+            symbol: this.symbol
         }
     }
 }

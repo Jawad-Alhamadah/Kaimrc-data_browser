@@ -29,3 +29,4 @@ exports.default = {
     Orange, Cyan, Turquoise, Green, Red, Magenta, Purple, Yellow, Magneta_Light, Cyan_Gray, Colored_text,
     Violet, Indigo, Blue, Bold
 };
+//# sourceMappingURL=cmd_colors.js.map

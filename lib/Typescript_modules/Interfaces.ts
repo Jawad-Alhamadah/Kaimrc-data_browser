@@ -55,7 +55,7 @@ export interface GnomadDataJson {
     data: {
         meta: {},
         gene: {
-            clinvarVariants: object[],
+            clinvar_variants: object[],
             variants: object[]
 
         }
