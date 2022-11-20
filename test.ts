@@ -88,7 +88,7 @@ async function processLineByLine() {
       });
       
       //print columns
-      let searchTerms = "hgv"
+      let searchTerms = "num|rs"
       let searchList = searchTerms.split(/\|/g);
       mylist =searchAndCreateKeyValuePairs(row, searchList)
       is_first_line = false

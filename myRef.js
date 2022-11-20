@@ -22,7 +22,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.processLineByLine = void 0;
 const fs = require("fs"); //mycomment
 const readline = require("readline");
+const variables_1 = require("./lib/Typescript_modules/variables");
 const { promises: fsPromise } = require("fs");
+const Reference_1 = require("./lib/Classes/Reference");
 const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 var path = require('path');
 let colorsCounter = 0;
@@ -42,7 +44,7 @@ function processLineByLine(filePath) {
                 input: readStream,
                 crlfDelay: Infinity,
             });
-            let features = ['chrom', 'source', 'feature', 'start', 'end', 'score', 'strand', 'frame'];
+            let features = ['chrom', 'source', 'feature_type', 'start', 'end', 'score', 'strand', 'frame'];
             try {
                 //forloop to read vcf file one line at a time
                 for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
@@ -74,9 +76,10 @@ function processLineByLine(filePath) {
                         completeList[key] = no_feature_List[i];
                     });
                     featuredKeyValue.forEach((pair, i) => {
-                        completeList[pair.key] = pair.value;
+                        completeList[pair.key] = pair.value.replace(/["]/g, "");
                     });
-                    console.log(completeList);
+                    //if(!line.includes("level")) console.log("no hgnc")
+                    console.log(new Reference_1.Reference(variables_1.gftToReference, completeList));
                     // let singlePair:any = noComma[1]
                     // let x = singlePair.split(/\s+/g)
                     //console.log(noComma);

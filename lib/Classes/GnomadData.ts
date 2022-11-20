@@ -2,10 +2,19 @@
 export default class GnomadData{
 
     constructor(){}
+    //this function gets values from column names maps.
+    // gnomad has features named differently compared to Kaimrc data
+    //feature - > first map[feature]  -> paired feature  - > second map[paired feature]  - > value 
 
-    getValueByField(feature: string, values: string[], firstLayerMap: any[], secondLayerMap: any[]) {
+    //if given a row of data, then the value produced would be an index that goes to the row of data to get the value
+    
+    //feature - > first map[feature]  -> paired feature  - > second map[paired feature]  - > index -> row[index] -> value 
+
+    getValueByField(feature: string, firstLayerMap: any[], secondLayerMap: any[], rowOfData?: string[]) {
         //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
-        return values[this.retriveMappedValue(this.retriveMappedValue(feature, firstLayerMap), secondLayerMap)]
+        if(rowOfData) 
+            return rowOfData[this.retriveMappedValue(this.retriveMappedValue(feature, firstLayerMap), secondLayerMap)]
+        return this.retriveMappedValue(this.retriveMappedValue(feature, firstLayerMap), secondLayerMap)
 
     }
 

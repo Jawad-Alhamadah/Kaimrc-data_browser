@@ -1,11 +1,11 @@
 const fs = require("fs");//mycomment
 const readline = require("readline");
-import { GnomadDataJson } from "./lib/Typescript_modules/Interfaces"
-import { Variant } from "./lib/Classes/Variant"
-import { ClinvarVariant } from "./lib/Classes/ClinvarVariant"
-import { vcfFeatures, GnomadFeaturesToVcfDictionary } from "./lib/Typescript_modules/variables"
+
+import { gftFeatures,gftToReference } from "./lib/Typescript_modules/variables"
 import { Errback, Request, Response } from "express"
 const { promises: fsPromise } = require("fs");
+import { Reference } from "./lib/Classes/Reference";
+
 import CMD from "./cmd_libs/cmd_colors"
 var path = require('path')
 let colorsCounter = 0
@@ -27,8 +27,8 @@ export async function processLineByLine(filePath: string) {
         input: readStream,
         crlfDelay: Infinity,
     });
-    let features = ['chrom','source','feature','start','end','score','strand','frame']
-    
+    let features = ['chrom','source','feature_type','start','end','score','strand','frame']
+
     //forloop to read vcf file one line at a time
     for await (const line of rl) {
         //read the firstline and split it into one row of data entires
@@ -61,9 +61,11 @@ export async function processLineByLine(filePath: string) {
         })
 
         featuredKeyValue.forEach((pair:any,i) =>{
-            completeList[pair.key] = pair.value
+            completeList[pair.key] = pair.value.replace(/["]/g,"")
         })
-        console.log(completeList)
+        //if(!line.includes("level")) console.log("no hgnc")
+         console.log(new Reference (gftToReference,completeList))
+
        // let singlePair:any = noComma[1]
        // let x = singlePair.split(/\s+/g)
         //console.log(noComma);

@@ -1,5 +1,5 @@
 import GnomadData from "./GnomadData"
-export class Variant extends GnomadData{
+export class Variant extends GnomadData {
     consequence: string = ""
     flags: [] | null = null
     hgvs: string = ""
@@ -34,53 +34,53 @@ export class Variant extends GnomadData{
     lof_curation: null = null
 
 
-    constructor(row: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
+    constructor(rowOfValues: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
         super()
-        let variant:string = this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices)
-        let hgvsc:string  = this.getValueByField("hgvsc", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
-        let hgvsp:string  = this.getValueByField("hgvsp", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
-        let hgvs:string  = this.getValueByField("hgvs", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
-        let chrom  :string = this.getValueByField("chrom", row, gnomadToVcfMap, vcfFieldsToIndices)
-        let chromNum :string = chrom.match(/[0-9]+/gm)? chrom.match(/[0-9]+/gm)![0] : "NA"
-        this.consequence = this.getValueByField("consequence", row, gnomadToVcfMap, vcfFieldsToIndices)
+        let variant: string     = this.getValueByField("pos", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let hgvsc: string       = this.getValueByField("hgvsc", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues).split(":")[1]
+        let hgvsp: string       = this.getValueByField("hgvsp", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues).split(":")[1]
+        let hgvs: string        = this.getValueByField("hgvs", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues).split(":")[1]
+        let chrom: string       = this.getValueByField("chrom", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let chromNum: string    = chrom.match(/[0-9]+/gm) ? chrom.match(/[0-9]+/gm)![0] : "NA"
+        let ref:string          = this.getValueByField("ref", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let alt:string          = this.getValueByField("alt", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let genomeAc:number     = Number(this.getValueByField("ac", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues))
+        let genomeAcHemi:number = Number(this.getValueByField("ac_hemi", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues))
+        let genomeAcHom:number  = Number(this.getValueByField("ac_hom", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues))
+        let genomeAn:number     = Number(this.getValueByField("an", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)) * 2
+        let genomeAf:number     = Number(this.getValueByField("af", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues))
+        let consequence:string  = this.getValueByField("consequence", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let pos: number         = Number(this.getValueByField("pos", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues))
+        let rsids:string        = this.getValueByField("rsids", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let transcript_id       = this.getValueByField("transcript_id", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+        let transcript_version  = this.getValueByField("transcript_version", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
+
+        this.consequence = consequence
         this.flags = []
-        this.hgvsc = hgvsc? hgvsc :"NA"
-        this.hgvsp = hgvsp? hgvsp : "NA"
-        this.hgvs =  hgvs? hgvs: "NA"
+        this.hgvsc = hgvsc ? hgvsc : "NA"
+        this.hgvsp = hgvsp ? hgvsp : "NA"
+        this.hgvs = hgvs ? hgvs : "NA"
         this.lof = null
         this.lof_filter = null
         this.lof_flags = null
-        this.pos = Number(this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices))
-        this.rsids = []
-        this.transcript_id = this.getValueByField("transcript_id", row, gnomadToVcfMap, vcfFieldsToIndices)
-        this.transcript_version = this.getValueByField("transcript_version", row, gnomadToVcfMap, vcfFieldsToIndices)
-        this.variant_id = chromNum+"-"+variant+"-"+
-                        this.getValueByField("ref", row, gnomadToVcfMap, vcfFieldsToIndices)+
-                        "-"+
-                        this.getValueByField("alt", row, gnomadToVcfMap, vcfFieldsToIndices)
-       // this.variant_id = this.getValueByField("variant_id", row, gnomadToVcfMap, vcfFieldsToIndices)
-        //this.variant_id = "1-1-"+this.feature_to_variant_value("ref", row, gnomadJsonFeatures, gnomadToIndicesMap)+"-"+this.feature_to_variant_value("alt", row, gnomadJsonFeatures, gnomadToIndicesMap)
+        this.pos = pos
+        this.rsids.push(rsids)
+        this.transcript_id = transcript_id
+        this.transcript_version = transcript_version
+        this.variant_id = `${chromNum}-${variant}-${ref}-${alt}`
+        this.lof_curation = null
         this.exome = null
         this.genome = {
-            ac: Number(this.getValueByField("ac", row, gnomadToVcfMap, vcfFieldsToIndices)),
-            ac_hemi: Number(this.getValueByField("ac_hemi", row, gnomadToVcfMap, vcfFieldsToIndices)),
-            ac_hom: Number(this.getValueByField("ac_hom", row, gnomadToVcfMap, vcfFieldsToIndices)),
-            an: Number(this.getValueByField("an", row, gnomadToVcfMap, vcfFieldsToIndices)) * 2,
-            af: Number(this.getValueByField("af", row, gnomadToVcfMap, vcfFieldsToIndices)),
+            ac: genomeAc,
+            ac_hemi: genomeAcHemi,
+            ac_hom: genomeAcHom,
+            an: genomeAn,
+            af: genomeAf,
             filters: [],
             populations: []
         }
-        this.lof_curation = null
-
+        
     }
-    // getValueByField(feature: string, valuesRow: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: number[]) {
-    //     //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
-    //     return valuesRow[this.retriveMappedValue(this.retriveMappedValue(feature, gnomadToVcfMap), vcfFieldsToIndices)]
-
-    // }
-    // retriveMappedValue(name: string, map: any) {
-    //     return map[name]
-    // }
     toJson() {
         return {
             consequence: this.consequence,
