@@ -1,4 +1,5 @@
-export class Variant {
+import GnomadData from "./GnomadData"
+export class Variant extends GnomadData{
     consequence: string = ""
     flags: [] | null = null
     hgvs: string = ""
@@ -34,6 +35,7 @@ export class Variant {
 
 
     constructor(row: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
+        super()
         let variant:string = this.getValueByField("pos", row, gnomadToVcfMap, vcfFieldsToIndices)
         let hgvsc:string  = this.getValueByField("hgvsc", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
         let hgvsp:string  = this.getValueByField("hgvsp", row, gnomadToVcfMap, vcfFieldsToIndices).split(":")[1]
@@ -71,14 +73,14 @@ export class Variant {
         this.lof_curation = null
 
     }
-    getValueByField(feature: string, valuesRow: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: number[]) {
-        //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
-        return valuesRow[this.retriveMappedValue(this.retriveMappedValue(feature, gnomadToVcfMap), vcfFieldsToIndices)]
+    // getValueByField(feature: string, valuesRow: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: number[]) {
+    //     //console.log(retrive_mapped_value(feature,clinvar_gnomad_to_indices_mapp))
+    //     return valuesRow[this.retriveMappedValue(this.retriveMappedValue(feature, gnomadToVcfMap), vcfFieldsToIndices)]
 
-    }
-    retriveMappedValue(name: string, map: any) {
-        return map[name]
-    }
+    // }
+    // retriveMappedValue(name: string, map: any) {
+    //     return map[name]
+    // }
     toJson() {
         return {
             consequence: this.consequence,

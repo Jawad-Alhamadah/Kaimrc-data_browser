@@ -28,6 +28,7 @@ export async function processLineByLine(filePath: string) {
         crlfDelay: Infinity,
     });
     let features = ['chrom','source','feature','start','end','score','strand','frame']
+    
     //forloop to read vcf file one line at a time
     for await (const line of rl) {
         //read the firstline and split it into one row of data entires

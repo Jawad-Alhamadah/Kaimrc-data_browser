@@ -21,11 +21,13 @@ for (let index = 0; index < gnomadFieldnames.length; index++) {
   GnomadFeaturesToVcfDictionary[gnomadFieldnames[index]] = vcfFeatures[index]
     }
 
-let gftFeatures =  ['chrom','source','feature','start','end','score','strand','frame']
+let refFeatures =  ['chrom','source','feature_type','start','stop','score','strand','frame','gene_id','canonical_transcript_id','hgnc_id','level',"symbol"]
+let gftFeatures =  ['chrom','source','feature_type','start','stop','score','strand','frame','gene_id','transcript_id','hgnc_id','transcript_version',"gene_name"]
+
 export let gftToReference: any = [] 
 
 for (let index = 0; index < gnomadFieldnames.length; index++) {
-  GnomadFeaturesToVcfDictionary[gnomadFieldnames[index]] = vcfFeatures[index]
+  gftToReference[gftFeatures[index]] = refFeatures[index]
     }
 
 
