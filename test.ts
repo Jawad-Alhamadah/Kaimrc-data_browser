@@ -1,9 +1,9 @@
 //import { json } from "body-parser";
-import { GnomadDataJson } from "./lib/Typescript_modules/Interfaces"
+import { GnomadDataJson } from "./lib/Typescript_modules/interfaces"
 //.....
 import CMD from "./cmd_libs/cmd_colors"
-import { Variant } from "./lib/Classes/Variant"
-import { ClinvarVariant } from "./lib/Classes/ClinvarVariant"
+// import { Variant } from "./lib/Classes/Variant"
+// import { ClinvarVariant } from "./lib/Classes/ClinvarVariant"
 import {vcfFeatures,gnomadFieldnames} from "./lib/Typescript_modules/variables"
 const fs = require("fs");//mycomment
 const readline = require("readline");

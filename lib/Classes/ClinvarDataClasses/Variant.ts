@@ -1,4 +1,6 @@
 import GnomadData from "./GnomadData"
+import  {VariantExome}  from "./VariantExome"
+import  {VariantGenome}  from "./VariantGenome"
 export class Variant extends GnomadData {
     consequence: string = ""
     flags: [] | null = null
@@ -13,29 +15,14 @@ export class Variant extends GnomadData {
     transcript_id: string = ""
     transcript_version: string = ""
     variant_id: string = ""
-    exome: {
-        ac: number,
-        ac_hemi: number,
-        ac_hom: number,
-        an: number,
-        af: number,
-        filters: any[],
-        populations: [] | null
-    } | null = null
-    genome: {
-        ac: number,
-        ac_hemi: number,
-        ac_hom: number,
-        an: number,
-        af: number,
-        filters: any[],
-        populations: [] | null
-    } | null = null
+    exome: VariantExome |null = null
+    genome: VariantGenome |null =null
     lof_curation: null = null
 
 
-    constructor(rowOfValues: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[]) {
+    constructor(rowOfValues: string[], gnomadToVcfMap: string[], vcfFieldsToIndices: any[],isEmptyConstruct?:boolean) {
         super()
+        if(isEmptyConstruct) return
         let variant: string     = this.getValueByField("pos", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues)
         let hgvsc: string       = this.getValueByField("hgvsc", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues).split(":")[1]
         let hgvsp: string       = this.getValueByField("hgvsp", gnomadToVcfMap, vcfFieldsToIndices, rowOfValues).split(":")[1]
@@ -81,24 +68,5 @@ export class Variant extends GnomadData {
         }
         
     }
-    toJson() {
-        return {
-            consequence: this.consequence,
-            flags: this.flags,
-            hgvs: this.hgvs,
-            hgvsc: this.hgvsc,
-            hgvsp: this.hgvsp,
-            lof: this.lof,
-            lof_filter: this.lof_filter,
-            lof_flags: this.lof_flags,
-            pos: this.pos,
-            rsids: this.rsids,
-            transcript_id: this.transcript_id,
-            transcript_version: this.transcript_version,
-            variant_id: this.variant_id,
-            exome: this.exome,
-            genome: this.genome,
-            lof_curation: this.lof_curation
-        }
-    }
+
 }

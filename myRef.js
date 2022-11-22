@@ -24,7 +24,7 @@ const fs = require("fs"); //mycomment
 const readline = require("readline");
 const variables_1 = require("./lib/Typescript_modules/variables");
 const { promises: fsPromise } = require("fs");
-const Reference_1 = require("./lib/Classes/Reference");
+const Reference_1 = require("./lib/Classes/GeneReferenceDataClasses/Reference");
 const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 var path = require('path');
 let colorsCounter = 0;
@@ -46,9 +46,19 @@ function processLineByLine(filePath) {
             });
             let features = ['chrom', 'source', 'feature_type', 'start', 'end', 'score', 'strand', 'frame'];
             try {
+                //verification comment
+                //another ver
                 //forloop to read vcf file one line at a time
                 for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
                     const line = rl_1_1.value;
+                    let gnomadJsonDataStructure = {
+                        data: {
+                            meta: { clinvar_release_date: "2022-01-04" },
+                            gene: {
+                                variants: []
+                            }
+                        }
+                    };
                     //read the firstline and split it into one row of data entires
                     let row = line.split(/\t/g);
                     if (line.includes('#'))
@@ -79,7 +89,9 @@ function processLineByLine(filePath) {
                         completeList[pair.key] = pair.value.replace(/["]/g, "");
                     });
                     //if(!line.includes("level")) console.log("no hgnc")
-                    console.log(new Reference_1.Reference(variables_1.gftToReference, completeList));
+                    let newRef = new Reference_1.Reference(variables_1.gftToReference, completeList);
+                    // newRef.transcripts.push(new ReferenceTranscripts.toJson())
+                    // console.log(newRef.transcripts[0])
                     // let singlePair:any = noComma[1]
                     // let x = singlePair.split(/\s+/g)
                     //console.log(noComma);

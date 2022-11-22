@@ -4,8 +4,8 @@ const readline = require("readline");
 import { gftFeatures,gftToReference } from "./lib/Typescript_modules/variables"
 import { Errback, Request, Response } from "express"
 const { promises: fsPromise } = require("fs");
-import { Reference } from "./lib/Classes/Reference";
-
+import { Reference } from "./lib/Classes/GeneReferenceDataClasses/Reference";
+import { ReferenceTranscripts } from "./lib/Classes/GeneReferenceDataClasses/ReferenceTranscripts";
 import CMD from "./cmd_libs/cmd_colors"
 var path = require('path')
 let colorsCounter = 0
@@ -32,6 +32,15 @@ export async function processLineByLine(filePath: string) {
     //another ver
     //forloop to read vcf file one line at a time
     for await (const line of rl) {
+        let gnomadJsonDataStructure = {
+            data: {
+                meta: {clinvar_release_date: "2022-01-04"},
+                gene: {
+                    variants: []
+                }
+            }
+        }
+
         //read the firstline and split it into one row of data entires
         let row: string[] = line.split(/\t/g);
         if(line.includes('#')) continue
@@ -65,7 +74,10 @@ export async function processLineByLine(filePath: string) {
             completeList[pair.key] = pair.value.replace(/["]/g,"")
         })
         //if(!line.includes("level")) console.log("no hgnc")
-         console.log(new Reference (gftToReference,completeList))
+        let newRef = new Reference (gftToReference,completeList)
+        
+        // newRef.transcripts.push(new ReferenceTranscripts.toJson())
+        // console.log(newRef.transcripts[0])
 
        // let singlePair:any = noComma[1]
        // let x = singlePair.split(/\s+/g)

@@ -1,8 +1,8 @@
 const fs = require("fs");//mycomment
 const readline = require("readline");
-import { GnomadDataJson } from "./Interfaces"
-import { Variant } from "../Classes/Variant"
-import { ClinvarVariant } from "../Classes/ClinvarVariant"
+import { GnomadDataJson } from "./interfaces"
+import { Variant } from "../Classes/ClinvarDataClasses/Variant"
+import { ClinvarVariant } from "../Classes//ClinvarDataClasses/ClinvarVariant"
 import { vcfFeatures, GnomadFeaturesToVcfDictionary } from "./variables"
 import { Errback, Request, Response } from "express"
 const { promises: fsPromise } = require("fs");
@@ -20,13 +20,13 @@ export async function processLineByLine(filePath: string, destination: string) {
     let vcfFilterIndices: number[] = [];
     let jsonEntriesCount: number = 0
     let ensemblIdMap = {}
-    let indexOfGeneFeature:number= 0;
-    let prevEnsemblId :string =""
-    let prevSymbol:string = ""
-    let dotCounter:number  = 0
-    let indexOfSymbol:number = 0
-    let isRowOfFeatures:boolean =true
-    let listOfRowLengths:number[]=[]
+    let indexOfGeneFeature: number = 0;
+    let prevEnsemblId: string = ""
+    let prevSymbol: string = ""
+    let dotCounter: number = 0
+    let indexOfSymbol: number = 0
+    let isRowOfFeatures: boolean = true
+    let listOfRowLengths: number[] = []
     const readStream = fs.createReadStream(filePath);
 
     const rl = readline.createInterface({
@@ -37,7 +37,7 @@ export async function processLineByLine(filePath: string, destination: string) {
     //this is the general structure of the gnomad json files
     let gnomadJsonDataStructure: GnomadDataJson = {
         data: {
-            meta: {clinvar_release_date: "2022-01-04"},
+            meta: { clinvar_release_date: "2022-01-04" },
             gene: {
                 clinvar_variants: [],
                 variants: []
@@ -45,20 +45,22 @@ export async function processLineByLine(filePath: string, destination: string) {
             }
         }
     }
-    
+
     //forloop to read vcf file one line at a time
     for await (const line of rl) {
         //read the firstline and split it into one row of data entires
+
         let row: string[] = line.split(/\t/g);
-       // let row: string[] = line.split(/\t+/g)
-        listOfRowLengths.push(row.length)
-        let currentEnsemblId:string = row[indexOfGeneFeature]
-        let currentSymbol:string = row[indexOfSymbol]
-        let tempRow =row.map(value =>{
-            if (value==="-") {return "NA"}
-            else {return value.trim()}
+        let currentEnsemblId: string = row[indexOfGeneFeature]
+        let currentSymbol: string = row[indexOfSymbol]
+
+        vcfFilterIndices.forEach(index => {
+            row[index] = row[index].trim()
+            if (row[index] === '-')
+                row[index] = "NA"
         })
-        row = tempRow
+
+        // row = tempRow
         /*
         the if statment below handles the first line of the VCF file.
         its a special case because the first line contains the feature
@@ -73,86 +75,59 @@ export async function processLineByLine(filePath: string, destination: string) {
         */
 
         if (isRowOfFeatures) {
-            let allFeatures : string[] = row.map(feature =>feature.toLowerCase())
+            let allFeatures: string[] = row.map(feature => feature.toLowerCase())
             vcfFilterIndices = createFilterIndices(vcfFeatures, allFeatures)
-            
-            allFeatures.forEach((feature,i)=> {
-                if(feature==="symbol") 
+
+            allFeatures.forEach((feature, i) => {
+                if (feature === "symbol")
                     indexOfSymbol = i
-                if(feature==="gene")
-                    indexOfGeneFeature = i  
+                if (feature === "gene")
+                    indexOfGeneFeature = i
             })
-           
-            let filteredVcfFeatures :string [] = vcfFilterIndices.map(value => allFeatures[value].toLowerCase())
+
+            let filteredVcfFeatures: string[] = vcfFilterIndices.map(value => allFeatures[value].toLowerCase())
             vcfFeaturesToFilterIndicesDictionary = createDictionary(filteredVcfFeatures, vcfFilterIndices)
             isRowOfFeatures = false
             continue
-            
+
         }
-        if(isFirstLine){
-            prevSymbol=currentSymbol
-            prevEnsemblId=currentEnsemblId
-            isFirstLine=false
+        if (isFirstLine) {
+            prevSymbol = currentSymbol
+            prevEnsemblId = currentEnsemblId
+            isFirstLine = false
         }
-           
-        
 
         /* create variants and ClinvarVariant obejcts
            we use the row of data, and  gnomad to vcf, vcf to index dictonaries
            to get the information only using a string of the name of the gnomad fields as input.
-
         */
         dotCounter++
-       if(dotCounter>10000){
-        process.stdout.write(".")
-        dotCounter = 0;
-       }
-       //continue
+        if (dotCounter > 10000) {
+            process.stdout.write(".")
+            dotCounter = 0;
+        }
+
         let clinvarVariant: ClinvarVariant =
             new ClinvarVariant(row, GnomadFeaturesToVcfDictionary, vcfFeaturesToFilterIndicesDictionary)
         let variant: Variant =
             new Variant(row, GnomadFeaturesToVcfDictionary, vcfFeaturesToFilterIndicesDictionary)
+
         gnomadJsonDataStructure.data.gene.clinvar_variants.push(clinvarVariant.toJson())
         gnomadJsonDataStructure.data.gene.variants.push(variant.toJson())
         jsonEntriesCount++
-       
-        // //this if statment is to write the json file once our entries reach the limit of 
-        // //javascript variable size.
-        
+
         if (!(prevSymbol === currentSymbol)) {
-           // jsonEntriesCount = 0;
-          //  jsonFilesCount++
-            //let writeStream = fs.createWriteStream(path.join(destination, `myjson${jsonFilesCount}.json`))
+  
             let writeStream = fs.createWriteStream(path.join(destination, `${prevSymbol}-${prevEnsemblId}.json`))
             writeStream.write(JSON.stringify(gnomadJsonDataStructure, null, 4));
             prevSymbol = currentSymbol
-            prevEnsemblId=currentEnsemblId
+            prevEnsemblId = currentEnsemblId
             //empty json to avoid going over the limit of javascript variable size
-            gnomadJsonDataStructure = { data: { meta: {clinvar_release_date: "2022-01-04"}, gene: { clinvar_variants: [], variants: [] } } }
+            gnomadJsonDataStructure = { data: { meta: { clinvar_release_date: "2022-01-04" }, gene: { clinvar_variants: [], variants: [] } } }
             writeStream.end()
         }
 
-//////
-
-
     }
-
-    //we make sure the last bit of data that didn't quite reach the limit is still written to a file
-    // if (gnomadJsonDataStructure.data.gene.clinvar_variants.length) {
-    //   //  let writeStream = fs.createWriteStream(path.join(destination, `myjson${jsonFilesCount}.json`))
-    //    let writeStream = fs.createWriteStream(path.join(destination, `${prevSymbol}.json`) )
-    //    // jsonFilesCount++
-    //     writeStream.write(JSON.stringify(gnomadJsonDataStructure, null, 4));
-    //     writeStream.end()
-
-    // }
-    // writeStream.end()
-    // for (let index = 0; index < listOfRowLengths.length; index++) {
-    //     let numb = listOfRowLengths[index]
-    //     process.stdout.write("_")
-    //     process.stdout.write(numb.toString())
-       
-    // }
     console.timeEnd("time:")
 
 }

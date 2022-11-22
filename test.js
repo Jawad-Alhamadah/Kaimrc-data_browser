@@ -21,6 +21,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //.....
 const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
+// import { Variant } from "./lib/Classes/Variant"
+// import { ClinvarVariant } from "./lib/Classes/ClinvarVariant"
 const variables_1 = require("./lib/Typescript_modules/variables");
 const fs = require("fs"); //mycomment
 const readline = require("readline");

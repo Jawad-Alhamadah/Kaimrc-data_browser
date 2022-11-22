@@ -1,5 +1,6 @@
-import { ClinvarVariant } from "../Classes/ClinvarVariant"
-import { Variant } from "../Classes/Variant"
+// import { ClinvarVariant } from "../Classes/ClinvarVariant"
+// import { Reference } from "../Classes/Reference"
+// import { Variant } from "../Classes/Variant"
 
 // export interface ClinvarVariant extends Object {
 //     clinical_significance: string,
@@ -61,3 +62,17 @@ export interface GnomadDataJson {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
