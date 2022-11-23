@@ -25,6 +25,8 @@ const readline = require("readline");
 const variables_1 = require("./lib/Typescript_modules/variables");
 const { promises: fsPromise } = require("fs");
 const Reference_1 = require("./lib/Classes/GeneReferenceDataClasses/Reference");
+const ReferenceTranscript_1 = require("./lib/Classes/GeneReferenceDataClasses/ReferenceTranscript");
+const ReferenceExon_1 = require("./lib/Classes/GeneReferenceDataClasses/ReferenceExon");
 const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 var path = require('path');
 let colorsCounter = 0;
@@ -38,6 +40,8 @@ function processLineByLine(filePath) {
             let indexOfGeneFeature = 0;
             let dotCounter = 0;
             let indexOfSymbol = 0;
+            let newRef = new Reference_1.Reference([], []);
+            let newTrans = [];
             let listOfRowLengths = [];
             const readStream = fs.createReadStream(filePath);
             const rl = readline.createInterface({
@@ -45,6 +49,7 @@ function processLineByLine(filePath) {
                 crlfDelay: Infinity,
             });
             let features = ['chrom', 'source', 'feature_type', 'start', 'end', 'score', 'strand', 'frame'];
+            let typeIndex = 2;
             try {
                 //verification comment
                 //another ver
@@ -61,6 +66,7 @@ function processLineByLine(filePath) {
                     };
                     //read the firstline and split it into one row of data entires
                     let row = line.split(/\t/g);
+                    let type = row[typeIndex];
                     if (line.includes('#'))
                         continue;
                     let no_feature_List = line.match(/.*(?=gene_id)/g);
@@ -89,7 +95,32 @@ function processLineByLine(filePath) {
                         completeList[pair.key] = pair.value.replace(/["]/g, "");
                     });
                     //if(!line.includes("level")) console.log("no hgnc")
-                    let newRef = new Reference_1.Reference(variables_1.gftToReference, completeList);
+                    // let newExon = new ReferenceTranscriptExon()
+                    // newRef.transcripts[0].exons.push(newExon)
+                    // console.log(JSON.stringify(newRef, null, 4))
+                    switch (type) {
+                        case "gene":
+                            newRef.pushTranscripts(newTrans);
+                            console.log(JSON.stringify(newRef, null, 4));
+                            newRef = new Reference_1.Reference(variables_1.gftToReference, completeList);
+                            newTrans = [];
+                            break;
+                        case "transcript":
+                            newTrans.push(new ReferenceTranscript_1.ReferenceTranscript(variables_1.gftToReference, completeList));
+                            // console.log(newTrans)
+                            // console.log(colors[0]("transcript : "), colors[1](JSON.stringify(newRef, null, 4)))
+                            break;
+                        case "CDS":
+                        case "start_codon":
+                        case "UTR":
+                        case "exon":
+                        case "stop_codon":
+                            newTrans[newTrans.length - 1].exons.push(new ReferenceExon_1.ReferenceTranscriptExon(variables_1.gftToReference, completeList));
+                            // console.log(newTrans)
+                            //  console.log(colors[0]("Mix : "), colors[1](JSON.stringify(newRef, null, 4)))
+                            break;
+                    }
+                    //console.log(newTrans)
                     // newRef.transcripts.push(new ReferenceTranscripts.toJson())
                     // console.log(newRef.transcripts[0])
                     // let singlePair:any = noComma[1]
@@ -119,7 +150,7 @@ function processLineByLine(filePath) {
                         colorsCounter = 0;
                     console.log("\n");
                     dotCounter++;
-                    if (dotCounter > 100) {
+                    if (dotCounter > 1000) {
                         break;
                         // dotCounter = 0;
                     }

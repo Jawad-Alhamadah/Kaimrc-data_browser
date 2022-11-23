@@ -1,23 +1,23 @@
-export interface GnomadReferenceConstraint {
-    exp_lof: number
-    exp_mis: number
-    exp_syn: number
-    obs_lof: number
-    obs_mis: number
-    obs_syn: number
-    oe_lof: number
-    oe_lof_lower: number
-    oe_lof_upper: number
-    oe_mis: number
-    oe_mis_lower: number
-    oe_mis_upper: number
-    oe_syn: number
-    oe_syn_lower: number
-    oe_syn_upper: number
-    lof_z: number
-    mis_z: number
-    syn_z: number
-    pLI: number
-    flags: any[]
+export class GnomadReferenceConstraint {
+    exp_lof:number = 0
+    exp_mis:number = 0
+    exp_syn:number = 0
+    obs_lof:number = 0
+    obs_mis:number = 0
+    obs_syn:number = 0
+    oe_lof:number = 0
+    oe_lof_lower:number = 0
+    oe_lof_upper:number = 0
+    oe_mis:number = 0
+    oe_mis_lower:number = 0
+    oe_mis_upper:number = 0
+    oe_syn:number = 0
+    oe_syn_lower:number = 0
+    oe_syn_upper:number = 0
+    lof_z:number = 0
+    mis_z:number = 0
+    syn_z:number = 0
+    pLI:number = 0
+    flags: any[] = []
 
 }

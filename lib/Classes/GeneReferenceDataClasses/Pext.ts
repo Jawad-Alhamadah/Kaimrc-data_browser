@@ -1,5 +1,6 @@
 import { PextRegion } from "./PextRegion"
-export class  Pext {
+import GnomadData from "../ClinvarDataClasses/GnomadData"
+export class Pext extends GnomadData{
 
     regions: PextRegion[] =[]
     flags: any[] = []

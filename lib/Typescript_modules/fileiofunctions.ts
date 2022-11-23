@@ -49,7 +49,7 @@ export async function processLineByLine(filePath: string, destination: string) {
     //forloop to read vcf file one line at a time
     for await (const line of rl) {
         //read the firstline and split it into one row of data entires
-
+       // continue
         let row: string[] = line.split(/\t/g);
         let currentEnsemblId: string = row[indexOfGeneFeature]
         let currentSymbol: string = row[indexOfSymbol]
@@ -112,10 +112,11 @@ export async function processLineByLine(filePath: string, destination: string) {
         let variant: Variant =
             new Variant(row, GnomadFeaturesToVcfDictionary, vcfFeaturesToFilterIndicesDictionary)
 
-        gnomadJsonDataStructure.data.gene.clinvar_variants.push(clinvarVariant.toJson())
-        gnomadJsonDataStructure.data.gene.variants.push(variant.toJson())
+        gnomadJsonDataStructure.data.gene.clinvar_variants.push(clinvarVariant)
+        gnomadJsonDataStructure.data.gene.variants.push(variant)
         jsonEntriesCount++
-
+        //console.log(JSON.stringify(gnomadJsonDataStructure, null, 4))
+        //continue
         if (!(prevSymbol === currentSymbol)) {
   
             let writeStream = fs.createWriteStream(path.join(destination, `${prevSymbol}-${prevEnsemblId}.json`))

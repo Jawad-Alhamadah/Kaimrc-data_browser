@@ -1,8 +1,8 @@
 import GnomadData from "../ClinvarDataClasses/GnomadData"
-import { ReferenceExon } from "./ReferenceExon"
+import { ReferenceTranscriptExon } from "./ReferenceExon"
 import { GnomadReferenceConstraint } from "./GnomadReferenceConstraint"
 import { ExacReferenceConstraint } from "./ExacReferenceConstraint"
-import { ReferenceTranscripts } from "./ReferenceTranscripts"
+import { ReferenceTranscript } from "./ReferenceTranscript"
 import { Pext } from "./Pext"
 export class Reference extends GnomadData {
     reference_genome: string
@@ -20,12 +20,12 @@ export class Reference extends GnomadData {
     start: number
     stop: number
     strand: string
-    exons: ReferenceExon[]
+    exons: ReferenceTranscriptExon[] = []
     flags: []
-    gnomad_constraint: GnomadReferenceConstraint
-    exac_constraint: ExacReferenceConstraint
-    transcripts: ReferenceTranscripts[]
-    pext: Pext
+    gnomad_constraint: GnomadReferenceConstraint = new GnomadReferenceConstraint()
+    exac_constraint: ExacReferenceConstraint = new ExacReferenceConstraint()
+    transcripts: ReferenceTranscript[] = []
+    pext: Pext = new Pext()
     exac_regional_missense_constraint_regions: any[] | null
     // source: string
     // feature_type: string
@@ -57,37 +57,14 @@ export class Reference extends GnomadData {
         this.strand = this.getValueByField("strand", gnomadToFeatures, featuresToValue)
         this.exons = []
         this.flags = []
-        this.gnomad_constraint = {} as GnomadReferenceConstraint
-        this.exac_constraint = {} as ExacReferenceConstraint
+        this.gnomad_constraint = new GnomadReferenceConstraint()
+        this.exac_constraint = new ExacReferenceConstraint()
         this.transcripts = []
-        this.pext = {} as Pext
+        this.pext = new Pext()
         this.exac_regional_missense_constraint_regions = null
     }
-
-    toJson() {
-        return {
-            reference_genome :  this.reference_genome,
-            gene_id :  this.gene_id ,
-            gene_version : this.gene_version ,
-            symbol :  this.symbol,
-            gencode_symbol : this.gencode_symbol,
-            name :  this.name ,
-            canonical_transcript_id :  this.canonical_transcript_id,
-            mane_select_transcript :  this.mane_select_transcript,
-            hgnc_id :  this.hgnc_id,
-            ncbi_id :  this.ncbi_id,
-            omim_id :  this.omim_id, 
-            chrom :  this.chrom,
-            start : this.start,
-            stop : this.stop ,
-            strand :   this.strand, 
-            exons :  this.exons ,
-            flags :  this.flags,
-            gnomad_constraint : this.gnomad_constraint ,
-            exac_constraint :  this.exac_constraint ,
-            transcripts : this.transcripts,
-            pext :  this.pext ,
-            exac_regional_missense_constraint_regions :  this.exac_regional_missense_constraint_regions
-        }
+    pushTranscripts(transcripts:ReferenceTranscript[]){
+       
+        this.transcripts=transcripts
     }
 }

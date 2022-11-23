@@ -5,7 +5,8 @@ import { gftFeatures,gftToReference } from "./lib/Typescript_modules/variables"
 import { Errback, Request, Response } from "express"
 const { promises: fsPromise } = require("fs");
 import { Reference } from "./lib/Classes/GeneReferenceDataClasses/Reference";
-import { ReferenceTranscripts } from "./lib/Classes/GeneReferenceDataClasses/ReferenceTranscripts";
+import { ReferenceTranscript } from "./lib/Classes/GeneReferenceDataClasses/ReferenceTranscript";
+import { ReferenceTranscriptExon } from "./lib/Classes/GeneReferenceDataClasses/ReferenceExon";
 import CMD from "./cmd_libs/cmd_colors"
 var path = require('path')
 let colorsCounter = 0
@@ -19,7 +20,8 @@ export async function processLineByLine(filePath: string) {
     let indexOfGeneFeature:number= 0;
     let dotCounter:number  = 0
     let indexOfSymbol:number = 0
-
+    let newRef: any = new Reference([],[])
+    let newTrans:any[]=[]
     let listOfRowLengths:number[]=[]
     const readStream = fs.createReadStream(filePath);
 
@@ -28,6 +30,7 @@ export async function processLineByLine(filePath: string) {
         crlfDelay: Infinity,
     });
     let features = ['chrom','source','feature_type','start','end','score','strand','frame']
+    let typeIndex = 2
     //verification comment
     //another ver
     //forloop to read vcf file one line at a time
@@ -43,6 +46,7 @@ export async function processLineByLine(filePath: string) {
 
         //read the firstline and split it into one row of data entires
         let row: string[] = line.split(/\t/g);
+        let type = row[typeIndex]
         if(line.includes('#')) continue
         let no_feature_List:string[] = line.match(/.*(?=gene_id)/g)
         let featured_List:string[] = line.split(/.*(?=gene_id)/g)
@@ -74,8 +78,38 @@ export async function processLineByLine(filePath: string) {
             completeList[pair.key] = pair.value.replace(/["]/g,"")
         })
         //if(!line.includes("level")) console.log("no hgnc")
-        let newRef = new Reference (gftToReference,completeList)
-        
+         
+       // let newExon = new ReferenceTranscriptExon()
+       // newRef.transcripts[0].exons.push(newExon)
+       // console.log(JSON.stringify(newRef, null, 4))
+
+        switch(type){
+            
+            case "gene":
+                
+                newRef.pushTranscripts(newTrans)
+                console.log(JSON.stringify(newRef, null, 4))
+               
+                newRef = new Reference (gftToReference,completeList)
+                newTrans=[]
+                break
+            case "transcript":
+
+                newTrans.push(new ReferenceTranscript(gftToReference,completeList))
+               // console.log(newTrans)
+               // console.log(colors[0]("transcript : "), colors[1](JSON.stringify(newRef, null, 4)))
+                break
+            case "CDS":
+            case "start_codon":
+            case "UTR":
+            case "exon":
+            case "stop_codon":
+                newTrans[newTrans.length-1].exons.push(new ReferenceTranscriptExon(gftToReference,completeList))
+               // console.log(newTrans)
+              //  console.log(colors[0]("Mix : "), colors[1](JSON.stringify(newRef, null, 4)))
+                break         
+        }
+        //console.log(newTrans)
         // newRef.transcripts.push(new ReferenceTranscripts.toJson())
         // console.log(newRef.transcripts[0])
 
@@ -112,7 +146,7 @@ export async function processLineByLine(filePath: string) {
         if(colorsCounter>6) colorsCounter= 0
         console.log("\n")
        dotCounter++
-       if(dotCounter>100){
+       if(dotCounter>1000){
         break
        // dotCounter = 0;
        }

@@ -22,28 +22,17 @@ export default class GnomadData{
         return map[name]
     }
 
-    toJson() {
-        //this is only used to get the propertynames.
-       // let variant = new Class([],[],[],true)
-        let json:{[key: string]: any} = {}
-        for(let x in this ){
-            json[x]= this[x]
-        }
-        return json
-        // return {
-        //     clinical_significance: this.clinical_significance,
-        //     clinvar_variation_id: this.clinvar_variation_id,
-        //     gnomad: this.gnomad,
-        //     gold_stars: this.gold_stars,
-        //     hgvsc: this.hgvsc,
-        //     hgvsp: this.hgvsp,
-        //     in_gnomad: this.in_gnomad,
-        //     major_consequence: this.major_consequence,
-        //     pos: this.pos,
-        //     review_status: this.review_status,
-        //     transcript_id: this.transcript_id,
-        //     variant_id: this.variant_id,
-        //     symbol: this.symbol
-        // }
-    }
 }
+
+
+
+
+    // toJson() {
+    //     //this is only used to get the propertynames.
+    //    // let variant = new Class([],[],[],true)
+    //     let json:{[key: string]: any} = {}
+    //     for(let x in this ){
+    //         json[x]= this[x]
+    //     }
+    //     return json
+    //     // return {
