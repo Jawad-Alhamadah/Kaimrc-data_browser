@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.*57C>T",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "3_prime_UTR_variant",
+                    "pos": 52796431,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000375511",
+                    "variant_id": "NA-52796431-G-A",
+                    "symbol": "SPANXN5"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "3_prime_UTR_variant",
+                    "flags": [],
+                    "hgvs": "c.*57C>T",
+                    "hgvsc": "c.*57C>T",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 52796431,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000375511",
+                    "variant_id": "NA-52796431-G-A",
+                    "exome": null,
+                    "genome": {
+                        "ac": 96,
+                        "ac_hemi": 46,
+                        "ac_hom": 25,
+                        "an": 802,
+                        "af": 0.119700748129676,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

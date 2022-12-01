@@ -4,7 +4,7 @@ import { GnomadDataJson } from "./lib/Typescript_modules/interfaces"
 import CMD from "./cmd_libs/cmd_colors"
 // import { Variant } from "./lib/Classes/Variant"
 // import { ClinvarVariant } from "./lib/Classes/ClinvarVariant"
-import {vcfFeatures,gnomadFieldnames} from "./lib/Typescript_modules/variables"
+import {VCF_FEATURES,GNOMAD_FIELDS} from "./lib/Typescript_modules/variables"
 const fs = require("fs");//mycomment
 const readline = require("readline");
 
@@ -21,8 +21,8 @@ let vcf_to_gnomad_map: any = []
 let mapping: any = {}
 let jsonCount = 0;
 
-for (let index = 0; index < gnomadFieldnames.length; index++) {
-  vcf_to_gnomad_map[gnomadFieldnames[index]] = vcfFeatures[index]
+for (let index = 0; index < GNOMAD_FIELDS.length; index++) {
+  vcf_to_gnomad_map[GNOMAD_FIELDS[index]] = VCF_FEATURES[index]
 }
 let prevId :string =""
 async function processLineByLine() {
@@ -67,7 +67,7 @@ async function processLineByLine() {
     
     if (is_first_line) {
       row.forEach((col_name: string, index: number) => {
-        if (vcfFeatures.includes(col_name.toLowerCase())) indices.push(index);
+        if (VCF_FEATURES.includes(col_name.toLowerCase())) indices.push(index);
         if(col_name.toLowerCase()==="gene") geneNum = index
         
       });
@@ -83,7 +83,7 @@ async function processLineByLine() {
       // row.forEach( e =>  { if( e.toLowerCase().includes("hg") ) console.log(e) })
       // break;
       row.forEach((col_name: string, index: number) => {
-        if (vcfFeatures.includes(col_name.toLowerCase())) indices.push(index);
+        if (VCF_FEATURES.includes(col_name.toLowerCase())) indices.push(index);
   
       });
       

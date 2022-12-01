@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "n.395+6C>A",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "splice_donor_region_variant,intron_variant,non_coding_transcript_variant",
+                    "pos": 100271832,
+                    "review_status": "NA",
+                    "transcript_id": "NR_028040.1",
+                    "variant_id": "7-100271832-G-T",
+                    "symbol": "CASTOR3"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "splice_donor_region_variant,intron_variant,non_coding_transcript_variant",
+                    "flags": [],
+                    "hgvs": "n.395+6C>A",
+                    "hgvsc": "n.395+6C>A",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 100271832,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "NR_028040.1",
+                    "variant_id": "7-100271832-G-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 1,
+                        "ac_hemi": 1,
+                        "ac_hom": 0,
+                        "an": 802,
+                        "af": 0.00124688279301746,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

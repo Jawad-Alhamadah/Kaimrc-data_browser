@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "downstream_gene_variant",
+                    "pos": 30718519,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000444335",
+                    "variant_id": "21-30718519-A-T",
+                    "symbol": "KRTAP21-3"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "downstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 30718519,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000444335",
+                    "variant_id": "21-30718519-A-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 50,
+                        "ac_hemi": 34,
+                        "ac_hom": 8,
+                        "an": 802,
+                        "af": 0.0623441396508728,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

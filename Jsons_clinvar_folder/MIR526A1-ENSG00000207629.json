@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "n.245-739A>G",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "intron_variant,non_coding_transcript_variant",
+                    "pos": 53706346,
+                    "review_status": "NA",
+                    "transcript_id": "XR_001753998.1",
+                    "variant_id": "19-53706346-A-G",
+                    "symbol": "LOC107985346"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "intron_variant,non_coding_transcript_variant",
+                    "flags": [],
+                    "hgvs": "n.245-739A>G",
+                    "hgvsc": "n.245-739A>G",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 53706346,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "XR_001753998.1",
+                    "variant_id": "19-53706346-A-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 144,
+                        "ac_hemi": 122,
+                        "ac_hom": 11,
+                        "an": 802,
+                        "af": 0.179551122194514,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

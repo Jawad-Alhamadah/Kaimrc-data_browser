@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.309+71A>G",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "intron_variant",
+                    "pos": 41084263,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000341376",
+                    "variant_id": "6-41084263-A-G",
+                    "symbol": "NFYA"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "intron_variant",
+                    "flags": [],
+                    "hgvs": "c.309+71A>G",
+                    "hgvsc": "c.309+71A>G",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 41084263,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000341376",
+                    "variant_id": "6-41084263-A-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 764,
+                        "ac_hemi": 0,
+                        "ac_hom": 382,
+                        "an": 802,
+                        "af": 0.952618453865337,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

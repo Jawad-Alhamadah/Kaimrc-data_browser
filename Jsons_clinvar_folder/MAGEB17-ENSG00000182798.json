@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.*41+24G>C",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "intron_variant",
+                    "pos": 16590728,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000359276",
+                    "variant_id": "NA-16590728-C-G",
+                    "symbol": "CTPS2"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "intron_variant",
+                    "flags": [],
+                    "hgvs": "c.*41+24G>C",
+                    "hgvsc": "c.*41+24G>C",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 16590728,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000359276",
+                    "variant_id": "NA-16590728-C-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 7,
+                        "ac_hemi": 3,
+                        "ac_hom": 2,
+                        "an": 802,
+                        "af": 0.00872817955112219,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

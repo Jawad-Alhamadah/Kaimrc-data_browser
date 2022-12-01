@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "downstream_gene_variant",
+                    "pos": 230025092,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000295190",
+                    "variant_id": "2-230025092-C-T",
+                    "symbol": "SLC16A14"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "downstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 230025092,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000295190",
+                    "variant_id": "2-230025092-C-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 33,
+                        "ac_hemi": 17,
+                        "ac_hom": 8,
+                        "an": 802,
+                        "af": 0.0411471321695761,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

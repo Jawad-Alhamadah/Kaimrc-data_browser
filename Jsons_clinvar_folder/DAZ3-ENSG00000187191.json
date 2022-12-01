@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.1302T>A",
+                    "hgvsp": "p.Ser434Arg",
+                    "in_gnomad": true,
+                    "major_consequence": "missense_variant",
+                    "pos": 24864466,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000682740",
+                    "variant_id": "NA-24864466-T-A",
+                    "symbol": "DAZ4"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "missense_variant",
+                    "flags": [],
+                    "hgvs": "c.1302T>A",
+                    "hgvsc": "c.1302T>A",
+                    "hgvsp": "p.Ser434Arg",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 24864466,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000682740",
+                    "variant_id": "NA-24864466-T-A",
+                    "exome": null,
+                    "genome": {
+                        "ac": 2,
+                        "ac_hemi": 0,
+                        "ac_hom": 1,
+                        "an": 802,
+                        "af": 0.00249376558603491,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

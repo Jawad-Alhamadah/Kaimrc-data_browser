@@ -1,5 +1,5 @@
 import GnomadData from "../ClinvarDataClasses/GnomadData"
-import { ReferenceTranscriptExon } from "./ReferenceExon"
+import { ReferenceTranscriptExon } from "./ReferenceTranscriptExon"
 import { GnomadReferenceConstraint } from "./GnomadReferenceConstraint"
 import { ExacReferenceConstraint } from "./ExacReferenceConstraint"
 import { ReferenceTranscript } from "./ReferenceTranscript"

@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "upstream_gene_variant",
+                    "pos": 16004227,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000329454",
+                    "variant_id": "1-16004227-G-A",
+                    "symbol": "SRARP"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "upstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 16004227,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000329454",
+                    "variant_id": "1-16004227-G-A",
+                    "exome": null,
+                    "genome": {
+                        "ac": 90,
+                        "ac_hemi": 74,
+                        "ac_hom": 8,
+                        "an": 802,
+                        "af": 0.112219451371571,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

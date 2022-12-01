@@ -1,0 +1,103 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "n.364G>C",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "non_coding_transcript_exon_variant",
+                    "pos": 94834510,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000557173",
+                    "variant_id": "12-94834510-G-C",
+                    "symbol": "KRT19P2"
+                },
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "upstream_gene_variant",
+                    "pos": 94928357,
+                    "review_status": "NA",
+                    "transcript_id": "XR_001749264.1",
+                    "variant_id": "12-94928357-C-T",
+                    "symbol": "LOC105369915"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "non_coding_transcript_exon_variant",
+                    "flags": [],
+                    "hgvs": "n.364G>C",
+                    "hgvsc": "n.364G>C",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 94834510,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000557173",
+                    "variant_id": "12-94834510-G-C",
+                    "exome": null,
+                    "genome": {
+                        "ac": 24,
+                        "ac_hemi": 22,
+                        "ac_hom": 1,
+                        "an": 802,
+                        "af": 0.029925187032419,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                },
+                {
+                    "consequence": "upstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 94928357,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "XR_001749264.1",
+                    "variant_id": "12-94928357-C-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 229,
+                        "ac_hemi": 161,
+                        "ac_hom": 34,
+                        "an": 802,
+                        "af": 0.285536159600997,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

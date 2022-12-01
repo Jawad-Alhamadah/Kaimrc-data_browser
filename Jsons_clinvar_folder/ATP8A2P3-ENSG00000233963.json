@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.1905T>C",
+                    "hgvsp": "p.Cys635%3D",
+                    "in_gnomad": true,
+                    "major_consequence": "synonymous_variant",
+                    "pos": 26213977,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000381588",
+                    "variant_id": "13-26213977-A-G",
+                    "symbol": "RNF6"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "synonymous_variant",
+                    "flags": [],
+                    "hgvs": "c.1905T>C",
+                    "hgvsc": "c.1905T>C",
+                    "hgvsp": "p.Cys635%3D",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 26213977,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000381588",
+                    "variant_id": "13-26213977-A-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 178,
+                        "ac_hemi": 136,
+                        "ac_hom": 21,
+                        "an": 802,
+                        "af": 0.221945137157107,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "upstream_gene_variant",
+                    "pos": 105865512,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000390560",
+                    "variant_id": "14-105865512-C-G",
+                    "symbol": "IGHJ6"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "upstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 105865512,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000390560",
+                    "variant_id": "14-105865512-C-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 18,
+                        "ac_hemi": 14,
+                        "ac_hom": 2,
+                        "an": 802,
+                        "af": 0.0224438902743142,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

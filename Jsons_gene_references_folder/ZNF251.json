@@ -1,0 +1,601 @@
+{
+    "data": {
+        "gene": {
+            "exons": [
+                {
+                    "feature_type": "exon",
+                    "start": 144755405,
+                    "stop": 144755486
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754205,
+                    "stop": 144754321
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144720907,
+                    "stop": 144721022
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144755405,
+                    "stop": 144755531
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754696,
+                    "stop": 144754803
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144754696,
+                    "stop": 144754728
+                },
+                {
+                    "feature_type": "start_codon",
+                    "start": 144754726,
+                    "stop": 144754728
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754192,
+                    "stop": 144754321
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144754192,
+                    "stop": 144754321
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144753683,
+                    "stop": 144753796
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144753683,
+                    "stop": 144753796
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144720909,
+                    "stop": 144723382
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144721647,
+                    "stop": 144723382
+                },
+                {
+                    "feature_type": "stop_codon",
+                    "start": 144721644,
+                    "stop": 144721646
+                },
+                {
+                    "feature_type": "UTR",
+                    "start": 144755405,
+                    "stop": 144755531
+                },
+                {
+                    "feature_type": "UTR",
+                    "start": 144754729,
+                    "stop": 144754803
+                },
+                {
+                    "feature_type": "UTR",
+                    "start": 144720909,
+                    "stop": 144721646
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144755405,
+                    "stop": 144755441
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144755405,
+                    "stop": 144755441
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754696,
+                    "stop": 144754803
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144754696,
+                    "stop": 144754803
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754192,
+                    "stop": 144754321
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144754192,
+                    "stop": 144754321
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144753454,
+                    "stop": 144753796
+                },
+                {
+                    "feature_type": "CDS",
+                    "start": 144753633,
+                    "stop": 144753796
+                },
+                {
+                    "feature_type": "stop_codon",
+                    "start": 144753630,
+                    "stop": 144753632
+                },
+                {
+                    "feature_type": "UTR",
+                    "start": 144753454,
+                    "stop": 144753632
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144754192,
+                    "stop": 144756417
+                },
+                {
+                    "feature_type": "exon",
+                    "start": 144753681,
+                    "stop": 144753796
+                }
+            ],
+            "gnomad_constraint": {
+                "exp_lof": 0,
+                "exp_mis": 0,
+                "exp_syn": 0,
+                "obs_lof": 0,
+                "obs_mis": 0,
+                "obs_syn": 0,
+                "oe_lof": 0,
+                "oe_lof_lower": 0,
+                "oe_lof_upper": 0,
+                "oe_mis": 0,
+                "oe_mis_lower": 0,
+                "oe_mis_upper": 0,
+                "oe_syn": 0,
+                "oe_syn_lower": 0,
+                "oe_syn_upper": 0,
+                "lof_z": 0,
+                "mis_z": 0,
+                "syn_z": 0,
+                "pLI": 0,
+                "flags": []
+            },
+            "exac_constraint": {
+                "exp_syn": 0,
+                "obs_syn": 0,
+                "syn_z": 0,
+                "exp_mis": 0,
+                "obs_mis": 0,
+                "mis_z": 0,
+                "exp_lof": 0,
+                "obs_lof": 0,
+                "lof_z": 0,
+                "pLI": 0
+            },
+            "transcripts": [
+                {
+                    "transcript_id": "ENST00000524394.2",
+                    "transcript_version": "2",
+                    "strand": "-",
+                    "exons": [
+                        {
+                            "feature_type": "exon",
+                            "start": 144755405,
+                            "stop": 144755486
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144754205,
+                            "stop": 144754321
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144720907,
+                            "stop": 144721022
+                        }
+                    ],
+                    "gtex_tissue_expression": {
+                        "adipose_subcutaneous": 0,
+                        "adipose_visceral_omentum": 0,
+                        "adrenal_gland": 0,
+                        "artery_aorta": 0,
+                        "artery_coronary": 0,
+                        "artery_tibial": 0,
+                        "bladder": 0,
+                        "brain_amygdala": 0,
+                        "brain_anterior_cingulate_cortex_ba24": 0,
+                        "brain_caudate_basal_ganglia": 0,
+                        "brain_cerebellar_hemisphere": 0,
+                        "brain_cerebellum": 0,
+                        "brain_cortex": 0,
+                        "brain_frontal_cortex_ba9": 0,
+                        "brain_hippocampus": 0,
+                        "brain_hypothalamus": 0,
+                        "brain_nucleus_accumbens_basal_ganglia": 0,
+                        "brain_putamen_basal_ganglia": 0,
+                        "brain_spinal_cord_cervical_c_1": 0,
+                        "brain_substantia_nigra": 0,
+                        "breast_mammary_tissue": 0,
+                        "cells_ebv_transformed_lymphocytes": 0,
+                        "cells_transformed_fibroblasts": 0,
+                        "cervix_ectocervix": 0,
+                        "cervix_endocervix": 0,
+                        "colon_sigmoid": 0,
+                        "colon_transverse": 0,
+                        "esophagus_gastroesophageal_junction": 0,
+                        "esophagus_mucosa": 0,
+                        "esophagus_muscularis": 0,
+                        "fallopian_tube": 0,
+                        "heart_atrial_appendage": 0,
+                        "heart_left_ventricle": 0,
+                        "kidney_cortex": 0,
+                        "liver": 0,
+                        "lung": 0,
+                        "minor_salivary_gland": 0,
+                        "muscle_skeletal": 0,
+                        "nerve_tibial": 0,
+                        "ovary": 0,
+                        "pancreas": 0,
+                        "pituitary": 0,
+                        "prostate": 0,
+                        "skin_not_sun_exposed_suprapubic": 0,
+                        "skin_sun_exposed_lower_leg": 0,
+                        "small_intestine_terminal_ileum": 0,
+                        "spleen": 0,
+                        "stomach": 0,
+                        "testis": 0,
+                        "thyroid": 0,
+                        "uterus": 0,
+                        "vagina": 0,
+                        "whole_blood": 0
+                    }
+                },
+                {
+                    "transcript_id": "ENST00000292562.12",
+                    "transcript_version": "2",
+                    "strand": "-",
+                    "exons": [
+                        {
+                            "feature_type": "exon",
+                            "start": 144755405,
+                            "stop": 144755531
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144754696,
+                            "stop": 144754803
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144754696,
+                            "stop": 144754728
+                        },
+                        {
+                            "feature_type": "start_codon",
+                            "start": 144754726,
+                            "stop": 144754728
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144754192,
+                            "stop": 144754321
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144754192,
+                            "stop": 144754321
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144753683,
+                            "stop": 144753796
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144753683,
+                            "stop": 144753796
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144720909,
+                            "stop": 144723382
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144721647,
+                            "stop": 144723382
+                        },
+                        {
+                            "feature_type": "stop_codon",
+                            "start": 144721644,
+                            "stop": 144721646
+                        },
+                        {
+                            "feature_type": "UTR",
+                            "start": 144755405,
+                            "stop": 144755531
+                        },
+                        {
+                            "feature_type": "UTR",
+                            "start": 144754729,
+                            "stop": 144754803
+                        },
+                        {
+                            "feature_type": "UTR",
+                            "start": 144720909,
+                            "stop": 144721646
+                        }
+                    ],
+                    "gtex_tissue_expression": {
+                        "adipose_subcutaneous": 0,
+                        "adipose_visceral_omentum": 0,
+                        "adrenal_gland": 0,
+                        "artery_aorta": 0,
+                        "artery_coronary": 0,
+                        "artery_tibial": 0,
+                        "bladder": 0,
+                        "brain_amygdala": 0,
+                        "brain_anterior_cingulate_cortex_ba24": 0,
+                        "brain_caudate_basal_ganglia": 0,
+                        "brain_cerebellar_hemisphere": 0,
+                        "brain_cerebellum": 0,
+                        "brain_cortex": 0,
+                        "brain_frontal_cortex_ba9": 0,
+                        "brain_hippocampus": 0,
+                        "brain_hypothalamus": 0,
+                        "brain_nucleus_accumbens_basal_ganglia": 0,
+                        "brain_putamen_basal_ganglia": 0,
+                        "brain_spinal_cord_cervical_c_1": 0,
+                        "brain_substantia_nigra": 0,
+                        "breast_mammary_tissue": 0,
+                        "cells_ebv_transformed_lymphocytes": 0,
+                        "cells_transformed_fibroblasts": 0,
+                        "cervix_ectocervix": 0,
+                        "cervix_endocervix": 0,
+                        "colon_sigmoid": 0,
+                        "colon_transverse": 0,
+                        "esophagus_gastroesophageal_junction": 0,
+                        "esophagus_mucosa": 0,
+                        "esophagus_muscularis": 0,
+                        "fallopian_tube": 0,
+                        "heart_atrial_appendage": 0,
+                        "heart_left_ventricle": 0,
+                        "kidney_cortex": 0,
+                        "liver": 0,
+                        "lung": 0,
+                        "minor_salivary_gland": 0,
+                        "muscle_skeletal": 0,
+                        "nerve_tibial": 0,
+                        "ovary": 0,
+                        "pancreas": 0,
+                        "pituitary": 0,
+                        "prostate": 0,
+                        "skin_not_sun_exposed_suprapubic": 0,
+                        "skin_sun_exposed_lower_leg": 0,
+                        "small_intestine_terminal_ileum": 0,
+                        "spleen": 0,
+                        "stomach": 0,
+                        "testis": 0,
+                        "thyroid": 0,
+                        "uterus": 0,
+                        "vagina": 0,
+                        "whole_blood": 0
+                    }
+                },
+                {
+                    "transcript_id": "ENST00000525191.2",
+                    "transcript_version": "2",
+                    "strand": "-",
+                    "exons": [
+                        {
+                            "feature_type": "exon",
+                            "start": 144755405,
+                            "stop": 144755441
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144755405,
+                            "stop": 144755441
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144754696,
+                            "stop": 144754803
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144754696,
+                            "stop": 144754803
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144754192,
+                            "stop": 144754321
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144754192,
+                            "stop": 144754321
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144753454,
+                            "stop": 144753796
+                        },
+                        {
+                            "feature_type": "CDS",
+                            "start": 144753633,
+                            "stop": 144753796
+                        },
+                        {
+                            "feature_type": "stop_codon",
+                            "start": 144753630,
+                            "stop": 144753632
+                        },
+                        {
+                            "feature_type": "UTR",
+                            "start": 144753454,
+                            "stop": 144753632
+                        }
+                    ],
+                    "gtex_tissue_expression": {
+                        "adipose_subcutaneous": 0,
+                        "adipose_visceral_omentum": 0,
+                        "adrenal_gland": 0,
+                        "artery_aorta": 0,
+                        "artery_coronary": 0,
+                        "artery_tibial": 0,
+                        "bladder": 0,
+                        "brain_amygdala": 0,
+                        "brain_anterior_cingulate_cortex_ba24": 0,
+                        "brain_caudate_basal_ganglia": 0,
+                        "brain_cerebellar_hemisphere": 0,
+                        "brain_cerebellum": 0,
+                        "brain_cortex": 0,
+                        "brain_frontal_cortex_ba9": 0,
+                        "brain_hippocampus": 0,
+                        "brain_hypothalamus": 0,
+                        "brain_nucleus_accumbens_basal_ganglia": 0,
+                        "brain_putamen_basal_ganglia": 0,
+                        "brain_spinal_cord_cervical_c_1": 0,
+                        "brain_substantia_nigra": 0,
+                        "breast_mammary_tissue": 0,
+                        "cells_ebv_transformed_lymphocytes": 0,
+                        "cells_transformed_fibroblasts": 0,
+                        "cervix_ectocervix": 0,
+                        "cervix_endocervix": 0,
+                        "colon_sigmoid": 0,
+                        "colon_transverse": 0,
+                        "esophagus_gastroesophageal_junction": 0,
+                        "esophagus_mucosa": 0,
+                        "esophagus_muscularis": 0,
+                        "fallopian_tube": 0,
+                        "heart_atrial_appendage": 0,
+                        "heart_left_ventricle": 0,
+                        "kidney_cortex": 0,
+                        "liver": 0,
+                        "lung": 0,
+                        "minor_salivary_gland": 0,
+                        "muscle_skeletal": 0,
+                        "nerve_tibial": 0,
+                        "ovary": 0,
+                        "pancreas": 0,
+                        "pituitary": 0,
+                        "prostate": 0,
+                        "skin_not_sun_exposed_suprapubic": 0,
+                        "skin_sun_exposed_lower_leg": 0,
+                        "small_intestine_terminal_ileum": 0,
+                        "spleen": 0,
+                        "stomach": 0,
+                        "testis": 0,
+                        "thyroid": 0,
+                        "uterus": 0,
+                        "vagina": 0,
+                        "whole_blood": 0
+                    }
+                },
+                {
+                    "transcript_id": "ENST00000530353.1",
+                    "transcript_version": "2",
+                    "strand": "-",
+                    "exons": [
+                        {
+                            "feature_type": "exon",
+                            "start": 144754192,
+                            "stop": 144756417
+                        },
+                        {
+                            "feature_type": "exon",
+                            "start": 144753681,
+                            "stop": 144753796
+                        }
+                    ],
+                    "gtex_tissue_expression": {
+                        "adipose_subcutaneous": 0,
+                        "adipose_visceral_omentum": 0,
+                        "adrenal_gland": 0,
+                        "artery_aorta": 0,
+                        "artery_coronary": 0,
+                        "artery_tibial": 0,
+                        "bladder": 0,
+                        "brain_amygdala": 0,
+                        "brain_anterior_cingulate_cortex_ba24": 0,
+                        "brain_caudate_basal_ganglia": 0,
+                        "brain_cerebellar_hemisphere": 0,
+                        "brain_cerebellum": 0,
+                        "brain_cortex": 0,
+                        "brain_frontal_cortex_ba9": 0,
+                        "brain_hippocampus": 0,
+                        "brain_hypothalamus": 0,
+                        "brain_nucleus_accumbens_basal_ganglia": 0,
+                        "brain_putamen_basal_ganglia": 0,
+                        "brain_spinal_cord_cervical_c_1": 0,
+                        "brain_substantia_nigra": 0,
+                        "breast_mammary_tissue": 0,
+                        "cells_ebv_transformed_lymphocytes": 0,
+                        "cells_transformed_fibroblasts": 0,
+                        "cervix_ectocervix": 0,
+                        "cervix_endocervix": 0,
+                        "colon_sigmoid": 0,
+                        "colon_transverse": 0,
+                        "esophagus_gastroesophageal_junction": 0,
+                        "esophagus_mucosa": 0,
+                        "esophagus_muscularis": 0,
+                        "fallopian_tube": 0,
+                        "heart_atrial_appendage": 0,
+                        "heart_left_ventricle": 0,
+                        "kidney_cortex": 0,
+                        "liver": 0,
+                        "lung": 0,
+                        "minor_salivary_gland": 0,
+                        "muscle_skeletal": 0,
+                        "nerve_tibial": 0,
+                        "ovary": 0,
+                        "pancreas": 0,
+                        "pituitary": 0,
+                        "prostate": 0,
+                        "skin_not_sun_exposed_suprapubic": 0,
+                        "skin_sun_exposed_lower_leg": 0,
+                        "small_intestine_terminal_ileum": 0,
+                        "spleen": 0,
+                        "stomach": 0,
+                        "testis": 0,
+                        "thyroid": 0,
+                        "uterus": 0,
+                        "vagina": 0,
+                        "whole_blood": 0
+                    }
+                }
+            ],
+            "pext": {
+                "regions": [],
+                "flags": []
+            },
+            "reference_genome": "gencode.v38.annotation",
+            "gene_id": "ENSG00000198169.9",
+            "gene_version": "9",
+            "symbol": "ZNF251",
+            "name": "unknown",
+            "mane_select_transcript": null,
+            "hgnc_id": "HGNC:13045",
+            "ncbi_id": "NA",
+            "omim_id": "NA",
+            "chrom": "chr8",
+            "start": 144720907,
+            "stop": 144756417,
+            "strand": "-",
+            "flags": [],
+            "exac_regional_missense_constraint_regions": null
+        }
+    }
+}

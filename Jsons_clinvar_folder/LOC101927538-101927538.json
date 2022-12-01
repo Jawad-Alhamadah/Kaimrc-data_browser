@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "n.6409C>T",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "non_coding_transcript_exon_variant",
+                    "pos": 109352852,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000368966",
+                    "variant_id": "6-109352852-C-T",
+                    "symbol": "CCDC162P"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "non_coding_transcript_exon_variant",
+                    "flags": [],
+                    "hgvs": "n.6409C>T",
+                    "hgvsc": "n.6409C>T",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 109352852,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000368966",
+                    "variant_id": "6-109352852-C-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 380,
+                        "ac_hemi": 212,
+                        "ac_hom": 84,
+                        "an": 802,
+                        "af": 0.473815461346633,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

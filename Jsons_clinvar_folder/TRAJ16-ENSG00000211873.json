@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "upstream_gene_variant",
+                    "pos": 22528694,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000390524",
+                    "variant_id": "14-22528694-G-T",
+                    "symbol": "TRAJ13"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "upstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 22528694,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000390524",
+                    "variant_id": "14-22528694-G-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 597,
+                        "ac_hemi": 97,
+                        "ac_hom": 250,
+                        "an": 802,
+                        "af": 0.744389027431421,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

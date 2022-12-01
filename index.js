@@ -17,15 +17,13 @@ const cmd_colors_1 = __importDefault(require("./cmd_libs/cmd_colors"));
 const express_1 = __importDefault(require("express"));
 let app = (0, express_1.default)();
 const util = require('util');
-//const { exec } = require("child_process");
 const exec = util.promisify(require('child_process').exec);
 const body_parser_1 = __importDefault(require("body-parser"));
-//import fs, { PathLike } from 'fs'
 const { promises: fs } = require("fs");
 let fsRename = util.promisify(fs.rename);
-//let fsReadDir = util.promisify(fs.readdir)
 const fileiofunctions_1 = require("./lib/Typescript_modules/fileiofunctions");
-let responseCode = require("./lib/Typescript_modules/responseCodes");
+const EmptySearchTermError_1 = require("./lib/Classes/ErrorClasses/EmptySearchTermError");
+const RESPONSE_CODES = require("./lib/Typescript_modules/responseCodes");
 var path = require('path');
 const multer = require("multer");
 let port = 5000;
@@ -33,11 +31,13 @@ let refNum = "";
 let storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // Uploads is the Upload_folder_name
-        cb(null, path.join(__dirname, process.env.UPLOAD_FOLDER_NAME_GENOME));
+        cb(null, path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD));
     },
-    filename: function (req, file, cb) {
-        let filename = timestampFilename(file.originalname);
-        cb(null, filename);
+    filename: function (req, fileMetaData, cb) {
+        // let filename = timestampFilename(file.originalname)
+        let ext = fileMetaData.originalname.split('.')[1];
+        let file = timestampFilename(`${process.env.VCF_FILENAME}.${ext}`);
+        cb(null, file);
     }
 });
 let upload = multer({
@@ -71,9 +71,9 @@ app.post('/download-file', function (req, res) {
             res.status(500).send("error while downloading the");
         }
         if (stderr) {
-            let oldFileName = getFilenameFromGSutil(command);
-            let oldFilePath = path.join(path.join(__dirname, terraUploadFoldername), oldFileName);
-            let stampedFilename = timestampFilename(oldFileName);
+            let oldFile = getFilenameFromGSutil(command);
+            let oldFilePath = path.join(path.join(__dirname, terraUploadFoldername), oldFile);
+            let stampedFilename = timestampFilename(oldFile);
             let stampedFilePath = path.join(path.join(__dirname, terraUploadFoldername), stampedFilename);
             let renameError = yield fsRename(oldFilePath, stampedFilePath);
             if (renameError)
@@ -89,31 +89,31 @@ app.post("/upload_data", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             //we start by getting the current VCF file
-            let dir = path.join(__dirname, process.env.UPLOAD_FOLDER_NAME_GENOME);
-            let filesNames = yield getFilenamesFromDir(dir, res);
-            let oldFilename = filesNames[0];
+            let dir = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
+            let files = yield (0, fileiofunctions_1.getFilenamesFromDir)(dir, res);
+            let oldFilename = files.filter((file) => file.includes(process.env.VCF_FILENAME))[0];
             upload(req, res, function (err) {
                 return __awaiter(this, void 0, void 0, function* () {
                     //error
                     if (err) {
                         console.log("error uploading the file : ", err);
-                        res.status(responseCode.SERVER_ERROR).send("failed to upload");
+                        res.status(RESPONSE_CODES.SERVER_ERROR).send("failed to upload");
                         return;
                     }
                     //success
-                    res.status(responseCode.CREATED).send("File Uploaded");
+                    res.status(RESPONSE_CODES.CREATED).send("File Uploaded");
                     //since upload is successful, we deleted the old file.
                     if (oldFilename)
-                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR);
-                    let vcfFoldername = path.join(__dirname, "/genome_data_files/");
+                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(dir, oldFilename), oldFilename, RESPONSE_CODES.SERVER_ERROR);
+                    let vcfGenomeFolder = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
                     let vcfFilename = req.file.filename;
-                    let vcfFullPath = path.join(vcfFoldername, vcfFilename);
-                    let jsonsFolderName = path.join(__dirname, "/json_files/");
-                    let jsonFiles = yield getFilenamesFromDir(jsonsFolderName, res);
-                    for (const file of jsonFiles) {
-                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR);
+                    let vcfFullPath = path.join(vcfGenomeFolder, vcfFilename);
+                    let jsonsVcfFolder = path.join(__dirname, process.env.JSONS_CLINVAR_FOLDER);
+                    let vcfJsons = yield (0, fileiofunctions_1.getFilenamesFromDir)(jsonsVcfFolder, res);
+                    for (const json of vcfJsons) {
+                        yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsVcfFolder, json), json, RESPONSE_CODES.SERVER_ERROR);
                     }
-                    let writeFilesDestination = jsonsFolderName;
+                    let writeFilesDestination = jsonsVcfFolder;
                     yield (0, fileiofunctions_1.processLineByLine)(vcfFullPath, writeFilesDestination);
                     console.log("done processing");
                 });
@@ -124,15 +124,19 @@ app.post("/upload_data", function (req, res) {
 });
 app.post("/api", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        switch (req.body.operationName) {
+        const OPERATION = req.body.operationName;
+        switch (OPERATION) {
             case "Gene":
-                refNum = req.body.variables.geneId;
-                return res.redirect(`/api/grch37`);
+                //refNum = req.body.variables.geneId // geneSymbol
+                refNum = req.body.variables.geneSymbol;
+                console.log(refNum);
+                /// return res.redirect(`/api/grch37`)
+                return res.redirect(`/api/Gene/${req.body.variables.geneSymbol}`);
             case "GeneCoverage":
-                return res.redirect(`/api/pcsk9`);
+                return res.redirect(`/api/GeneCoverage/pcsk9`);
             case "VariantsInGene":
                 //console.log(req.variables)
-                return res.redirect(`/api/${req.body.operationName}/${refNum}`);
+                return res.redirect(`/api/VariantsInGene/${req.body.operationName}/${refNum}`);
             //return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
             // return res.redirect(`/api/${req.body.operationName}/clinvar_stub`)
         }
@@ -143,47 +147,42 @@ app.post("/api", function (req, res) {
         //     return res.redirect(url)
         // }
         try {
-            let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
-            let filesNames = yield getFilenamesFromDir(dir, res);
+            if (!req.body.variables.query)
+                throw new EmptySearchTermError_1.EmptySearchTermError("Search Term is undefined", 400);
+            const SEARCH_TERM = req.body.variables.query.toLowerCase();
+            let dir = path.join(__dirname, process.env.JSONS_CLINVAR_FOLDER);
+            let filesNames = yield (0, fileiofunctions_1.getFilenamesFromDir)(dir, res);
             let ensemblIdList = filesNames.map(filename => {
                 let ensemblId = filename.split(".")[0].split("-")[1];
                 let symbol = filename.split(".")[0].split("-")[0];
-                let keyVale = { ensembl_id: ensemblId, symbol: symbol };
+                let keyVale = { ensembl_id: symbol, symbol: symbol };
                 return keyVale;
             });
             let data = { data: { gene_search: [] } };
-            for (let i = 0; i < 10; i++) {
-                let rand = Math.floor(Math.random() * (20000 - 0) + 0);
-                data.data.gene_search.push(ensemblIdList[rand]);
+            for (let i = 0; i < ensemblIdList.length; i++) {
+                const ELEMENT = ensemblIdList[i].symbol.toLowerCase();
+                // let rand = Math.floor(Math.random() * (20000 - 0) + 0)
+                if (ELEMENT.includes(SEARCH_TERM))
+                    data.data.gene_search.push(ensemblIdList[i]);
+                if (data.data.gene_search.length > 10)
+                    break;
             }
-            data.data.gene_search.push({ ensembl_id: "ENSG00000151136", symbol: "clinvar_stub" });
-            // data.data.gene_search.push(ensemblIdList[2000])
-            // data.data.gene_search.push(ensemblIdList[90])
-            //  data.data.gene_search.push(ensemblIdList[4628])
-            //  data.data.gene_search.push(ensemblIdList[3752])
-            //  data.data.gene_search.push(ensemblIdList[3588])
-            //  data.data.gene_search.push(ensemblIdList[200])
-            //  data.data.gene_search.push(ensemblIdList[16287])
-            //  data.data.gene_search.push(ensemblIdList[20000])
-            //  data.data.gene_search.push(ensemblIdList[12005])
-            //  data.data.gene_search.push(ensemblIdList[10000])
-            // data.data.gene_search.push({ensembl_id:"clinvar_stub", symbol: "clinvar_stub"})
             res.send(JSON.stringify(data));
         }
         catch (error) { }
     });
 });
-app.get("/api/:operationName/:symbol", function (req, res) {
+app.get("/api/VariantsInGene/:operationName/:symbol", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let readDir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
-        let filesNames = yield getFilenamesFromDir(readDir, res);
+        let readDir = path.join(__dirname, process.env.JSONS_CLINVAR_FOLDER);
+        let filesNames = yield (0, fileiofunctions_1.getFilenamesFromDir)(readDir, res);
         let filename = "";
         req.params.symbol;
         filesNames.forEach(element => {
             if (element.includes(req.params.symbol))
                 filename = element;
         });
-        let dir = path.join(__dirname, process.env.JSON_FILES_FOLDER);
+        let dir = path.join(__dirname, process.env.JSONS_CLINVAR_FOLDER);
         try {
             //console.log("symbol",req.params.symbol)
             let geneData = yield fs.readFile(path.join(dir, filename));
@@ -195,11 +194,11 @@ app.get("/api/:operationName/:symbol", function (req, res) {
         }
     });
 });
-app.get("/api/grch37", function (req, res) {
+app.get("/api/Gene/:ReferenceSymbol", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let dir = path.join(__dirname, process.env.GENE_REFRENCE_FILES);
+        let dir = path.join(__dirname, process.env.JSONS_GENE_REFRENCE_FOLDER);
         try {
-            let geneData = yield fs.readFile(path.join(dir, `grch37_reference_stub.json`));
+            let geneData = yield fs.readFile(path.join(dir, `${req.params.ReferenceSymbol}.json`));
             let jsonData = JSON.parse(geneData);
             res.send(JSON.stringify(jsonData));
         }
@@ -208,9 +207,9 @@ app.get("/api/grch37", function (req, res) {
         }
     });
 });
-app.get("/api/pcsk9", function (req, res) {
+app.get("/api/GeneCoverage/pcsk9", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let dir = path.join(__dirname, process.env.GENE_REFRENCE_FILES);
+        let dir = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
         try {
             let geneData = yield fs.readFile(path.join(dir, `pcsk9_coverage_stub.json`));
             let jsonData = JSON.parse(geneData);
@@ -221,30 +220,68 @@ app.get("/api/pcsk9", function (req, res) {
         }
     });
 });
-app.get("/process", function (req, res) {
+app.get("/UpdateData/process/vcf", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let vcfFoldername = path.join(__dirname, "/genome_data_files/");
-        let vcfFilename = yield getFilenamesFromDir(vcfFoldername, res);
-        let vcfFullPath = path.join(vcfFoldername, vcfFilename[0]);
-        let jsonsFolderName = path.join(__dirname, "/json_files/");
-        let jsonFiles = yield getFilenamesFromDir(jsonsFolderName, res);
-        for (const file of jsonFiles) {
-            yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR);
+        try {
+            let vcfGenomeFolder = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
+            let vcfFiles = yield (0, fileiofunctions_1.getFilenamesFromDir)(vcfGenomeFolder, res);
+            //this like filters the filenames and produces a list of 1 element containing the desired filename
+            let vcfFile = vcfFiles.filter((file) => file.includes(process.env.VCF_FILENAME))[0];
+            let vcfFullPath = path.join(vcfGenomeFolder, vcfFile);
+            let jsonsVcfFolder = path.join(__dirname, process.env.JSONS_CLINVAR_FOLDER);
+            let jsonVcfJsons = yield (0, fileiofunctions_1.getFilenamesFromDir)(jsonsVcfFolder, res);
+            for (const json of jsonVcfJsons) {
+                yield (0, fileiofunctions_1.deleteFile)(req, res, path.join(jsonsVcfFolder, json), json, RESPONSE_CODES.SERVER_ERROR);
+            }
+            let writeFilesDestination = jsonsVcfFolder;
+            yield (0, fileiofunctions_1.processLineByLine)(vcfFullPath, writeFilesDestination);
+            console.log("done processing");
+            res.send("processed!");
         }
-        let writeFilesDestination = jsonsFolderName;
-        yield (0, fileiofunctions_1.processLineByLine)(vcfFullPath, writeFilesDestination);
-        console.log("done processing");
-        res.send("processed!");
-        // let folderPath:string = path.join(__dirname, "/genome_data_files")
-        // let files: string[] =  await getFilenamesFromDir(folderPath,res)
-        // //console.log(files)
-        // files.forEach( async function(file) {
-        //     await deleteFile(req, res, path.join(folderName, file), responseCode.SERVER_ERROR)
-        // });
-        // let filename =files[0]
-        // let fullPath: string = path.join(folderPath, filename)
-        // let writeFilesDestination: string = path.join(__dirname, "json_files")
-        // await processLineByLine(fullPath, writeFilesDestination)
+        catch (err) {
+            console.log(err);
+        }
+    });
+});
+app.get("/UpdateData/process/Coverage", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let genomeFolder = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
+            let dataFiles = yield (0, fileiofunctions_1.getFilenamesFromDir)(genomeFolder, res);
+            //this like filters the filenames and produces a list of 1 element containing the desired filename
+            let coverageFile = dataFiles.filter((file) => file.includes(process.env.COVERAGE_FILE_STAMP))[0];
+            let coverageFilePath = path.join(genomeFolder, coverageFile);
+            //  let jsonsVcfFolder: string = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+            //  let jsonVcfJsons: string[] = await getFilenamesFromDir(jsonsVcfFolder, res)
+            //for (const json of jsonVcfJsons) {
+            //   await deleteFile(req, res, path.join(jsonsVcfFolder, json),json, responseCode.SERVER_ERROR)
+            //   }
+            let writeFilesDestination = path.join(__dirname, process.env.JSONS_COVERAGE_FOLDER);
+            yield (0, fileiofunctions_1.processCoverageLineByLine)(coverageFilePath, writeFilesDestination);
+            console.log("done processing");
+            res.send("processed!");
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+});
+app.get("/UpdateData/process/Reference", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let geneCodeFolder = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD);
+            geneCodeFolder = path.join(geneCodeFolder, process.env.GENE_CODE_FOLDER);
+            let geneCodeFile = yield (0, fileiofunctions_1.getFilenamesFromDir)(geneCodeFolder, res, 500);
+            geneCodeFile = geneCodeFile[0];
+            let geneCodeFullpath = path.join(geneCodeFolder, geneCodeFile);
+            let writeFilesDestination = path.join(__dirname, process.env.JSONS_GENE_REFRENCE_FOLDER);
+            yield (0, fileiofunctions_1.processReferenceLinebyLine)(geneCodeFullpath, writeFilesDestination);
+            res.status(RESPONSE_CODES.OK).send("File Processed");
+        }
+        catch (err) {
+            console.log(err.message);
+            res.status(RESPONSE_CODES.SERVER_ERROR).send(err.message);
+        }
     });
 });
 app.post("/reads", function (req, res) {
@@ -321,23 +358,19 @@ function pathToNameAndExtention(path) {
     let extention = filename.split(".")[1];
     return { name, extention };
 }
-function getFilenamesFromDir(dir, res, errorCode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            return yield fs.readdir(dir);
-        }
-        catch (error) {
-            res.status(errorCode ? errorCode : 500).send();
-            console.log(cmd_colors_1.default.Orange(`error in reading the filenames from ${dir} function : getFileNamesFromDir \n`), error);
-            throw error;
-        }
-    });
-}
-//process.on('uncaughtException', function (err: Error) {
-//  console.log(CMD.Red(`uncaughtException : ${err}`))
-//})
-//process.on('unhandledRejection', function (err: Error) {
-////   console.log(CMD.Red(`unhandledRejection : ${err}`))
-//});
-//processLineByLine(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Fri-Nov-04-2022_(_9H-50M-54S_)_1667587854600.txt", __dirname + "/json_files")
+// async function getFilenamesFromDir(dir: string, res: Response, errorCode?: number) {
+//     try {
+//         return await fs.readdir(dir);
+//     } catch (error) {
+//         res.status(errorCode ? errorCode : 500).send()
+//         console.log(CMD.Orange(`error in reading the filenames from ${dir} function : getFileNamesFromDir \n`), error);
+//         throw error
+//     }
+// }
+process.on('uncaughtException', function (err) {
+    console.log(cmd_colors_1.default.Red(`uncaughtException : ${err}`));
+});
+process.on('unhandledRejection', function (err) {
+    console.log(cmd_colors_1.default.Red(`unhandledRejection : ${err}`));
+});
 //# sourceMappingURL=index.js.map

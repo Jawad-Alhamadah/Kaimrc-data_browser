@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.*44G>A",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "3_prime_UTR_variant",
+                    "pos": 63908476,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000457488",
+                    "variant_id": "15-63908476-C-T",
+                    "symbol": "DAPK2"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "3_prime_UTR_variant",
+                    "flags": [],
+                    "hgvs": "c.*44G>A",
+                    "hgvsc": "c.*44G>A",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 63908476,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000457488",
+                    "variant_id": "15-63908476-C-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 18,
+                        "ac_hemi": 14,
+                        "ac_hom": 2,
+                        "an": 802,
+                        "af": 0.0224438902743142,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

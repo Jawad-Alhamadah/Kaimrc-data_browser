@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.289+60A>G",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "intron_variant",
+                    "pos": 127148899,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000356698",
+                    "variant_id": "6-127148899-A-G",
+                    "symbol": "RSPO3"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "intron_variant",
+                    "flags": [],
+                    "hgvs": "c.289+60A>G",
+                    "hgvsc": "c.289+60A>G",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 127148899,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000356698",
+                    "variant_id": "6-127148899-A-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 121,
+                        "ac_hemi": 87,
+                        "ac_hom": 17,
+                        "an": 802,
+                        "af": 0.150872817955112,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

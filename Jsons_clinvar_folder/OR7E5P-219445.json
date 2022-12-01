@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "downstream_gene_variant",
+                    "pos": 55993605,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000278409",
+                    "variant_id": "11-55993605-TA-T",
+                    "symbol": "OR5F1"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "downstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 55993605,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000278409",
+                    "variant_id": "11-55993605-TA-T",
+                    "exome": null,
+                    "genome": {
+                        "ac": 109,
+                        "ac_hemi": 93,
+                        "ac_hom": 8,
+                        "an": 802,
+                        "af": 0.135910224438903,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "c.4222A>T",
+                    "hgvsp": "p.Met1408Leu",
+                    "in_gnomad": true,
+                    "major_consequence": "missense_variant",
+                    "pos": 160565617,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000327245",
+                    "variant_id": "5-160565617-T-A",
+                    "symbol": "ATP10B"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "missense_variant",
+                    "flags": [],
+                    "hgvs": "c.4222A>T",
+                    "hgvsc": "c.4222A>T",
+                    "hgvsp": "p.Met1408Leu",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 160565617,
+                    "rsids": [
+                        "rs564583647"
+                    ],
+                    "transcript_id": "ENST00000327245",
+                    "variant_id": "5-160565617-T-A",
+                    "exome": null,
+                    "genome": {
+                        "ac": 6,
+                        "ac_hemi": 6,
+                        "ac_hom": 0,
+                        "an": 802,
+                        "af": 0.00748129675810474,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

@@ -36,8 +36,8 @@ let dot_counter = 0;
 let vcf_to_gnomad_map = [];
 let mapping = {};
 let jsonCount = 0;
-for (let index = 0; index < variables_1.gnomadFieldnames.length; index++) {
-    vcf_to_gnomad_map[variables_1.gnomadFieldnames[index]] = variables_1.vcfFeatures[index];
+for (let index = 0; index < variables_1.GNOMAD_FIELDS.length; index++) {
+    vcf_to_gnomad_map[variables_1.GNOMAD_FIELDS[index]] = variables_1.VCF_FEATURES[index];
 }
 let prevId = "";
 function processLineByLine() {
@@ -80,7 +80,7 @@ function processLineByLine() {
                 //row.splice(2400, row.length);
                 if (is_first_line) {
                     row.forEach((col_name, index) => {
-                        if (variables_1.vcfFeatures.includes(col_name.toLowerCase()))
+                        if (variables_1.VCF_FEATURES.includes(col_name.toLowerCase()))
                             indices.push(index);
                         if (col_name.toLowerCase() === "gene")
                             geneNum = index;
@@ -94,7 +94,7 @@ function processLineByLine() {
                     // row.forEach( e =>  { if( e.toLowerCase().includes("hg") ) console.log(e) })
                     // break;
                     row.forEach((col_name, index) => {
-                        if (variables_1.vcfFeatures.includes(col_name.toLowerCase()))
+                        if (variables_1.VCF_FEATURES.includes(col_name.toLowerCase()))
                             indices.push(index);
                     });
                     //print columns

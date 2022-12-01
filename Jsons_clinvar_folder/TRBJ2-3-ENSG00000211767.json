@@ -1,0 +1,58 @@
+{
+    "data": {
+        "meta": {
+            "clinvar_release_date": "2022-01-04"
+        },
+        "gene": {
+            "clinvar_variants": [
+                {
+                    "clinical_significance": "NA",
+                    "clinvar_variation_id": "NA",
+                    "gnomad": {
+                        "exome": null,
+                        "genome": null
+                    },
+                    "gold_stars": 5,
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "in_gnomad": true,
+                    "major_consequence": "upstream_gene_variant",
+                    "pos": 142796922,
+                    "review_status": "NA",
+                    "transcript_id": "ENST00000466254",
+                    "variant_id": "7-142796922-C-G",
+                    "symbol": "TRBC2"
+                }
+            ],
+            "variants": [
+                {
+                    "consequence": "upstream_gene_variant",
+                    "flags": [],
+                    "hgvs": "NA",
+                    "hgvsc": "NA",
+                    "hgvsp": "NA",
+                    "lof": null,
+                    "lof_filter": null,
+                    "lof_flags": null,
+                    "pos": 142796922,
+                    "rsids": [
+                        "NA"
+                    ],
+                    "transcript_id": "ENST00000466254",
+                    "variant_id": "7-142796922-C-G",
+                    "exome": null,
+                    "genome": {
+                        "ac": 228,
+                        "ac_hemi": 110,
+                        "ac_hom": 59,
+                        "an": 802,
+                        "af": 0.28428927680798,
+                        "filters": [],
+                        "populations": []
+                    },
+                    "lof_curation": null
+                }
+            ]
+        }
+    }
+}

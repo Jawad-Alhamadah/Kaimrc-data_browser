@@ -4,20 +4,18 @@ import CMD from "./cmd_libs/cmd_colors"
 import express from 'express'
 let app = express();
 const util = require('util');
-//const { exec } = require("child_process");
 const exec = util.promisify(require('child_process').exec)
 import bodyParser, { json } from 'body-parser'
-//import fs, { PathLike } from 'fs'
 const { promises: fs } = require("fs");
 let fsRename = util.promisify(fs.rename)
-//let fsReadDir = util.promisify(fs.readdir)
-import { processLineByLine ,deleteFile } from "./lib/Typescript_modules/fileiofunctions"
+import { processLineByLine, deleteFile, getFilenamesFromDir, processReferenceLinebyLine, processCoverageLineByLine } from "./lib/Typescript_modules/fileiofunctions"
 import axios from 'axios'
-let responseCode = require("./lib/Typescript_modules/responseCodes")
+import { EmptySearchTermError } from "./lib/Classes/ErrorClasses/EmptySearchTermError";
+const RESPONSE_CODES = require("./lib/Typescript_modules/responseCodes")
 var path = require('path')
 const multer = require("multer")
 let port: number = 5000;
-let refNum:string = ""
+let refNum: string = ""
 //
 interface MulterRequest extends Request {
     file: any;
@@ -28,11 +26,13 @@ let storage = multer.diskStorage({
     destination: function (req: Request, file: any, cb: any) {
 
         // Uploads is the Upload_folder_name
-        cb(null, path.join(__dirname, process.env.UPLOAD_FOLDER_NAME_GENOME))
+        cb(null, path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD))
     },
-    filename: function (req: Request, file: any, cb: any) {
-        let filename = timestampFilename(file.originalname)
-        cb(null, filename)
+    filename: function (req: Request, fileMetaData: any, cb: any) {
+        // let filename = timestampFilename(file.originalname)
+        let ext = fileMetaData.originalname.split('.')[1]
+        let file: string = timestampFilename(`${<string>process.env.VCF_FILENAME}.${ext}`)
+        cb(null, file)
     }
 })
 
@@ -53,7 +53,7 @@ let upload = multer({
 
 app.use(express.static(__dirname + "/public"))
 app.use(function (req: Request, res: Response, next: any) {
-    res.setHeader('Access-Control-Allow-Origin', ["https://app.terra.bio","https://localhost:8008","https://localhost:5000","https://*"]);
+    res.setHeader('Access-Control-Allow-Origin', ["https://app.terra.bio", "https://localhost:8008", "https://localhost:5000", "https://*"]);
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PATCH, DELETE, OPTIONS');
     next();
@@ -71,10 +71,10 @@ app.post('/download-file', async function (req: Request, res: Response) {
     }
     if (stderr) {
 
-        let oldFileName : string = getFilenameFromGSutil(command);
-        let oldFilePath : string = path.join(path.join(__dirname,terraUploadFoldername),oldFileName) 
-        let stampedFilename: string = timestampFilename(oldFileName)
-        let stampedFilePath :string = path.join(path.join(__dirname,terraUploadFoldername),stampedFilename) 
+        let oldFile: string = getFilenameFromGSutil(command);
+        let oldFilePath: string = path.join(path.join(__dirname, terraUploadFoldername), oldFile)
+        let stampedFilename: string = timestampFilename(oldFile)
+        let stampedFilePath: string = path.join(path.join(__dirname, terraUploadFoldername), stampedFilename)
         let renameError = await fsRename(oldFilePath, stampedFilePath)
         if (renameError) throw renameError
 
@@ -87,39 +87,39 @@ app.post('/download-file', async function (req: Request, res: Response) {
 })
 //this route handles uploading the VCF file to server, and then update the jason files to fit Gnomad
 app.post("/upload_data", async function (req: Request, res: Response) {
-    
+
     try {
         //we start by getting the current VCF file
-        let dir = path.join(__dirname, <string>process.env.UPLOAD_FOLDER_NAME_GENOME)
-        let filesNames: string[] = await getFilenamesFromDir(dir, res)
-        let oldFilename: string = filesNames[0]
+        let dir = path.join(__dirname, <string>process.env.GENOME_DATA_FOLDER_UPLOAD)
+        let files: string[] = await getFilenamesFromDir(dir, res)
+        let oldFilename: string = files.filter((file: string) => file.includes(<string>process.env.VCF_FILENAME))[0]
 
         upload(req, res, async function (err: any) {
             //error
             if (err) {
                 console.log("error uploading the file : ", err)
-                res.status(responseCode.SERVER_ERROR).send("failed to upload")
+                res.status(RESPONSE_CODES.SERVER_ERROR).send("failed to upload")
                 return
             }
             //success
 
-            res.status(responseCode.CREATED).send("File Uploaded")
+            res.status(RESPONSE_CODES.CREATED).send("File Uploaded")
             //since upload is successful, we deleted the old file.
-           if(oldFilename) await deleteFile(req, res, path.join(dir, oldFilename), responseCode.SERVER_ERROR)
-           
-           
-            let vcfFoldername: string = path.join(__dirname, "/genome_data_files/")
-            let vcfFilename: string = (req as MulterRequest).file.filename
-            let vcfFullPath: string = path.join(vcfFoldername, vcfFilename)
+            if (oldFilename) await deleteFile(req, res, path.join(dir, oldFilename), oldFilename, RESPONSE_CODES.SERVER_ERROR)
 
-            let jsonsFolderName: string = path.join(__dirname, "/json_files/")
-            let jsonFiles: string[] =  await getFilenamesFromDir(jsonsFolderName,res)
-            
-            for(const file of jsonFiles) {
-                await deleteFile(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR)
+
+            let vcfGenomeFolder: string = path.join(__dirname, <string>process.env.GENOME_DATA_FOLDER_UPLOAD)
+            let vcfFilename: string = (req as MulterRequest).file.filename
+            let vcfFullPath: string = path.join(vcfGenomeFolder, vcfFilename)
+
+            let jsonsVcfFolder: string = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+            let vcfJsons: string[] = await getFilenamesFromDir(jsonsVcfFolder, res)
+
+            for (const json of vcfJsons) {
+                await deleteFile(req, res, path.join(jsonsVcfFolder, json), json, RESPONSE_CODES.SERVER_ERROR)
             }
 
-            let writeFilesDestination: string = jsonsFolderName
+            let writeFilesDestination: string = jsonsVcfFolder
             await processLineByLine(vcfFullPath, writeFilesDestination)
             console.log("done processing")
 
@@ -128,18 +128,22 @@ app.post("/upload_data", async function (req: Request, res: Response) {
     } catch (error) { }
 })
 
-app.post("/api",async function (req: any, res: Response){
-    switch(req.body.operationName){
+app.post("/api", async function (req: any, res: Response) {
+    const OPERATION = req.body.operationName
+    switch (OPERATION) {
         case "Gene":
-            refNum = req.body.variables.geneId
-            return res.redirect(`/api/grch37`)
+            //refNum = req.body.variables.geneId // geneSymbol
+            refNum = req.body.variables.geneSymbol
+            console.log(refNum)
+            /// return res.redirect(`/api/grch37`)
+            return res.redirect(`/api/Gene/${req.body.variables.geneSymbol}`)
         case "GeneCoverage":
-            return res.redirect(`/api/pcsk9`)
+            return res.redirect(`/api/GeneCoverage/pcsk9`)
         case "VariantsInGene":
             //console.log(req.variables)
-            return res.redirect(`/api/${req.body.operationName}/${refNum}`)
-            //return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
-           // return res.redirect(`/api/${req.body.operationName}/clinvar_stub`)
+            return res.redirect(`/api/VariantsInGene/${req.body.operationName}/${refNum}`)
+        //return res.redirect(`/api/${req.body.operationName}/${req.body.variables.geneId.split('_')[0]}`)
+        // return res.redirect(`/api/${req.body.operationName}/clinvar_stub`)
     }
     // if(req.body.operationName ==="Gene"){
     //     //let url = `/api/${req.body.operationName}/${req.body.variables.geneId}`
@@ -147,119 +151,172 @@ app.post("/api",async function (req: any, res: Response){
     //     console.log(req.body.operationName)
     //     return res.redirect(url)
     // }
-    
-        try{
-           
-            let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
-            let filesNames: string[] = await getFilenamesFromDir(dir, res)
-           
-            let ensemblIdList = filesNames.map(filename =>{
-                let ensemblId = filename.split(".")[0].split("-")[1]
-                let symbol = filename.split(".")[0].split("-")[0]
-                let keyVale = { ensembl_id:ensemblId, symbol:symbol }
-               return keyVale
-            })
-            let data: any = { data:{ gene_search: [] } }
-            for(let i =0;i<10;i++){
-                let rand =Math.floor(Math.random() * (20000 - 0) + 0)
-                data.data.gene_search.push(ensemblIdList[rand])
-            }
-            data.data.gene_search.push({ ensembl_id:"ENSG00000151136", symbol:"clinvar_stub"})
-            // data.data.gene_search.push(ensemblIdList[2000])
-            // data.data.gene_search.push(ensemblIdList[90])
-            //  data.data.gene_search.push(ensemblIdList[4628])
-            //  data.data.gene_search.push(ensemblIdList[3752])
-            //  data.data.gene_search.push(ensemblIdList[3588])
-            //  data.data.gene_search.push(ensemblIdList[200])
-            //  data.data.gene_search.push(ensemblIdList[16287])
-            //  data.data.gene_search.push(ensemblIdList[20000])
-            //  data.data.gene_search.push(ensemblIdList[12005])
-            //  data.data.gene_search.push(ensemblIdList[10000])
-            // data.data.gene_search.push({ensembl_id:"clinvar_stub", symbol: "clinvar_stub"})
-            res.send(JSON.stringify(data))
+
+    try {
+        if(!req.body.variables.query) throw new EmptySearchTermError("Search Term is undefined",400)
+        const SEARCH_TERM = req.body.variables.query.toLowerCase()
+        let dir = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+        let filesNames: string[] = await getFilenamesFromDir(dir, res)
+
+        let ensemblIdList = filesNames.map(filename => {
+            let ensemblId = filename.split(".")[0].split("-")[1]
+            let symbol = filename.split(".")[0].split("-")[0]
+            let keyVale = { ensembl_id: symbol, symbol: symbol }
+            return keyVale
+        })
+        let data: any = { data: { gene_search: [] } }
+        for (let i = 0; i < ensemblIdList.length; i++) {
+            const ELEMENT = ensemblIdList[i].symbol.toLowerCase()
+            // let rand = Math.floor(Math.random() * (20000 - 0) + 0)
+           if(ELEMENT.includes(SEARCH_TERM))
+             data.data.gene_search.push(ensemblIdList[i])
+             if(  data.data.gene_search.length >10) break
         }
-       
-        catch(error){}
-    
+
+
+        res.send(JSON.stringify(data))
+    }
+
+    catch (error) { console.log(error) }
+
 })
 
-app.get("/api/:operationName/:symbol",async function (req: any, res: Response){
-    let readDir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
+app.get("/api/VariantsInGene/:operationName/:symbol", async function (req: any, res: Response) {
+    let readDir = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
     let filesNames: string[] = await getFilenamesFromDir(readDir, res)
-    let filename:string =""
+    let filename: string = ""
+
     req.params.symbol
     filesNames.forEach(element => {
-        if (element.includes(req.params.symbol)) filename =element
-        
+        if (element.includes(req.params.symbol)) filename = element
+
     });
-   let dir = path.join(__dirname, <string>process.env.JSON_FILES_FOLDER)
-   try{
+    let dir = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+    try {
 
-    //console.log("symbol",req.params.symbol)
-    let geneData= await fs.readFile(path.join(dir,filename))
-    let jsonData = JSON.parse(geneData)
-    
-    res.send(JSON.stringify(jsonData))
-   }catch(err){console.log(err)}
+        //console.log("symbol",req.params.symbol)
+        let geneData = await fs.readFile(path.join(dir, filename))
+        let jsonData = JSON.parse(geneData)
+
+        res.send(JSON.stringify(jsonData))
+    } catch (err) { console.log(err) }
 
 })
 
-app.get("/api/grch37",async function (req: Request, res: Response){
 
-    let dir = path.join(__dirname, <string>process.env.GENE_REFRENCE_FILES)
-    try{
-     let geneData= await fs.readFile(path.join(dir,`grch37_reference_stub.json`))
-     let jsonData = JSON.parse(geneData)
-     
-     res.send(JSON.stringify(jsonData))
-    }catch(err){console.log(err)}
- 
- })
 
- app.get("/api/pcsk9",async function (req: Request, res: Response){
 
-    let dir = path.join(__dirname, <string>process.env.GENE_REFRENCE_FILES)
-    try{
-     let geneData= await fs.readFile(path.join(dir,`pcsk9_coverage_stub.json`))
-     let jsonData = JSON.parse(geneData)
-     
-     res.send(JSON.stringify(jsonData))
-    }catch(err){console.log(err)}
- 
- })
+app.get("/api/Gene/:ReferenceSymbol", async function (req: Request, res: Response) {
 
-app.get( "/process",async function(req: Request, res: Response){
-    let vcfFoldername: string = path.join(__dirname, "/genome_data_files/")
-    let vcfFilename: string = await getFilenamesFromDir(vcfFoldername,res)
-    let vcfFullPath: string = path.join(vcfFoldername, vcfFilename[0])
+    let dir = path.join(__dirname, <string>process.env.JSONS_GENE_REFRENCE_FOLDER)
+    try {
 
-    let jsonsFolderName: string = path.join(__dirname, "/json_files/")
-    let jsonFiles: string[] =  await getFilenamesFromDir(jsonsFolderName,res)
-    
-    for(const file of jsonFiles) {
-        await deleteFile(req, res, path.join(jsonsFolderName, file), responseCode.SERVER_ERROR)
+        let geneData = await fs.readFile(path.join(dir, `${req.params.ReferenceSymbol}.json`))
+        let jsonData = JSON.parse(geneData)
+
+        res.send(JSON.stringify(jsonData))
+    } catch (err) { console.log(err) }
+
+})
+
+app.get("/api/GeneCoverage/pcsk9", async function (req: Request, res: Response) {
+
+    let dir = path.join(__dirname, <string>process.env.GENOME_DATA_FOLDER_UPLOAD)
+    try {
+        let geneData = await fs.readFile(path.join(dir, `pcsk9_coverage_stub.json`))
+        let jsonData = JSON.parse(geneData)
+
+        res.send(JSON.stringify(jsonData))
+    } catch (err) { console.log(err) }
+
+})
+
+app.get("/UpdateData/process/vcf", async function (req: Request, res: Response) {
+
+    try {
+        let vcfGenomeFolder: string = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD)
+        let vcfFiles: string[] = await getFilenamesFromDir(vcfGenomeFolder, res)
+        //this like filters the filenames and produces a list of 1 element containing the desired filename
+        let vcfFile: string = vcfFiles.filter((file: string) => file.includes(<string>process.env.VCF_FILENAME))[0]
+
+        let vcfFullPath: string = path.join(vcfGenomeFolder, vcfFile)
+
+        let jsonsVcfFolder: string = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+        let jsonVcfJsons: string[] = await getFilenamesFromDir(jsonsVcfFolder, res)
+
+        for (const json of jsonVcfJsons) {
+            await deleteFile(req, res, path.join(jsonsVcfFolder, json), json, RESPONSE_CODES.SERVER_ERROR)
+        }
+        let writeFilesDestination: string = jsonsVcfFolder
+        await processLineByLine(vcfFullPath, writeFilesDestination)
+        console.log("done processing")
+        res.send("processed!")
+
+    } catch (err) { console.log(err) }
+
+})
+
+app.get("/UpdateData/process/Coverage", async function (req: Request, res: Response) {
+
+    try {
+        let genomeFolder: string = path.join(__dirname, process.env.GENOME_DATA_FOLDER_UPLOAD)
+        let dataFiles: string[] = await getFilenamesFromDir(genomeFolder, res)
+        //this like filters the filenames and produces a list of 1 element containing the desired filename
+        let coverageFile: string = dataFiles.filter((file: string) => file.includes(<string>process.env.COVERAGE_FILE_STAMP))[0]
+
+        let coverageFilePath: string = path.join(genomeFolder, coverageFile)
+
+        //  let jsonsVcfFolder: string = path.join(__dirname, <string>process.env.JSONS_CLINVAR_FOLDER)
+        //  let jsonVcfJsons: string[] = await getFilenamesFromDir(jsonsVcfFolder, res)
+
+        //for (const json of jsonVcfJsons) {
+        //   await deleteFile(req, res, path.join(jsonsVcfFolder, json),json, responseCode.SERVER_ERROR)
+        //   }
+        let writeFilesDestination: string = path.join(__dirname, process.env.JSONS_COVERAGE_FOLDER)
+        await processCoverageLineByLine(coverageFilePath, writeFilesDestination)
+        console.log("done processing")
+        res.send("processed!")
+
+    } catch (err) { console.log(err) }
+
+})
+
+
+
+
+
+app.get("/UpdateData/process/Reference", async function (req: Request, res: Response) {
+    try {
+        let geneCodeFolder: string = path.join(__dirname, <string>process.env.GENOME_DATA_FOLDER_UPLOAD)
+        geneCodeFolder = path.join(geneCodeFolder, <string>process.env.GENE_CODE_FOLDER)
+        let geneCodeFile: string = await getFilenamesFromDir(geneCodeFolder, res, 500)
+        geneCodeFile = geneCodeFile[0]
+        let geneCodeFullpath: string = path.join(geneCodeFolder, geneCodeFile)
+
+        
+        let writeFilesDestination: string = path.join(__dirname, <string>process.env.JSONS_GENE_REFRENCE_FOLDER)
+
+        await processReferenceLinebyLine(geneCodeFullpath, writeFilesDestination)
+      
+        res.status(RESPONSE_CODES.OK).send("File Processed")
     }
-    let writeFilesDestination: string = jsonsFolderName
-    await processLineByLine(vcfFullPath, writeFilesDestination)
-    console.log("done processing")
-    res.send("processed!")
+    catch (err: any) {
+        console.log(err.message)
+        res.status(RESPONSE_CODES.SERVER_ERROR).send(err.message)
+
+    }
 
 
 
-            // let folderPath:string = path.join(__dirname, "/genome_data_files")
-            // let files: string[] =  await getFilenamesFromDir(folderPath,res)
-            // //console.log(files)
-            // files.forEach( async function(file) {
-            //     await deleteFile(req, res, path.join(folderName, file), responseCode.SERVER_ERROR)
-            // });
-            // let filename =files[0]
-            // let fullPath: string = path.join(folderPath, filename)
-            // let writeFilesDestination: string = path.join(__dirname, "json_files")
-            // await processLineByLine(fullPath, writeFilesDestination)
+
 })
 
-app.post("/reads",async function (req: Request, res: Response){
- console.log("inreads")
+
+
+
+
+app.post("/reads", async function (req: Request, res: Response) {
+    console.log("inreads")
 })
 
 
@@ -317,6 +374,8 @@ function timestampFilename(filename: string) {
     return `${name}-${todayStr}_${TIME_IN_HH_MM_SS}_${timestamp}.${extention}`
 }
 
+
+
 function pathToFilename(path: string) {
     //given a path, this regex returns the file and extention
     //let filename= path.match(/[^\/]+\s\.$/gm)![0]
@@ -347,23 +406,23 @@ function pathToNameAndExtention(path: string) {
     return { name, extention }
 }
 
-async function getFilenamesFromDir(dir: string, res: Response, errorCode?: number) {
-    try {
+// async function getFilenamesFromDir(dir: string, res: Response, errorCode?: number) {
+//     try {
 
-        return await fs.readdir(dir);
-    } catch (error) {
-        res.status(errorCode ? errorCode : 500).send()
-        console.log(CMD.Orange(`error in reading the filenames from ${dir} function : getFileNamesFromDir \n`), error);
-        throw error
-    }
-}
+//         return await fs.readdir(dir);
+//     } catch (error) {
+//         res.status(errorCode ? errorCode : 500).send()
+//         console.log(CMD.Orange(`error in reading the filenames from ${dir} function : getFileNamesFromDir \n`), error);
+//         throw error
+//     }
+// }
 
-//process.on('uncaughtException', function (err: Error) {
-  //  console.log(CMD.Red(`uncaughtException : ${err}`))
+process.on('uncaughtException', function (err: Error) {
+    
+   console.log(CMD.Red(`uncaughtException : ${err}`))
 
-//})
+})
 
-//process.on('unhandledRejection', function (err: Error) {
- ////   console.log(CMD.Red(`unhandledRejection : ${err}`))
-//});
-//processLineByLine(__dirname + "/genome_data_files/combined_annotated_VCF_allele_counts-Fri-Nov-04-2022_(_9H-50M-54S_)_1667587854600.txt", __dirname + "/json_files")
+process.on('unhandledRejection', function (err: Error) {
+   console.log(CMD.Red(`unhandledRejection : ${err}`))
+});

@@ -1,4 +1,4 @@
-import { ReferenceTranscriptExon } from "./ReferenceExon"
+import { ReferenceTranscriptExon } from "./ReferenceTranscriptExon"
 import { GtxTissueExpression } from "./GtxTissueExpression"
 import GnomadData from "../ClinvarDataClasses/GnomadData"
 export class ReferenceTranscript extends GnomadData {
